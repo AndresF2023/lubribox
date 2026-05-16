@@ -273,7 +273,7 @@ function TurnosForm() {
                         key={h}
                         type="button"
                         onClick={() => setHorario(h)}
-                        className={`px-4 py-2 rounded-lg border text-sm font-semibold transition-all ${
+                        className={`px-4 py-3 rounded-lg border text-sm font-semibold transition-all ${
                           horario === h
                             ? "border-red-600 bg-red-600 text-white"
                             : "border-gray-200 hover:border-red-400 hover:text-red-600"

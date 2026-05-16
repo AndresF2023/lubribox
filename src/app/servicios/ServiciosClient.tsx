@@ -151,7 +151,7 @@ export default function ServiciosClient() {
           <button
             key={id}
             onClick={() => setCategoria(id)}
-            className={`px-4 py-2 rounded-full text-sm font-semibold transition-colors ${
+            className={`px-4 py-3 rounded-full text-sm font-semibold transition-colors ${
               categoria === id
                 ? "bg-red-600 text-white"
                 : "bg-white border border-gray-200 text-gray-600 hover:border-red-300 hover:text-red-600"
