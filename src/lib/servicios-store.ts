@@ -8,7 +8,10 @@ export async function getServiciosStore(): Promise<Servicio[]> {
   try {
     const { blobs } = await list({ prefix: BLOB_PATH, limit: 1 });
     if (!blobs[0]) return serviciosDefault;
-    const res = await fetch(blobs[0].url, { cache: "no-store" });
+    const res = await fetch(blobs[0].downloadUrl ?? blobs[0].url, {
+      cache: "no-store",
+      headers: { Authorization: `Bearer ${process.env.BLOB_READ_WRITE_TOKEN}` },
+    });
     if (!res.ok) return serviciosDefault;
     return res.json();
   } catch {
@@ -18,7 +21,7 @@ export async function getServiciosStore(): Promise<Servicio[]> {
 
 export async function saveServiciosStore(data: Servicio[]): Promise<void> {
   await put(BLOB_PATH, JSON.stringify(data), {
-    access: "public",
+    access: "private",
     addRandomSuffix: false,
     allowOverwrite: true,
   });
