@@ -41,7 +41,7 @@ const testimonios = [
   { nombre: "Carlos P.", texto: "Rápido, prolijo y sin vueltas. Mi Ranger quedó impecable. Ya tengo el próximo turno sacado.", stars: 5 },
 ];
 
-const marcas = ["Toyota", "Ford", "Volkswagen", "Chevrolet", "Renault", "Peugeot", "Fiat", "Citroën"];
+const marcas = ["Toyota", "Ford", "Volkswagen", "Chevrolet", "Renault", "Peugeot", "Fiat", "Citroën", "Audi", "BMW", "Chery", "Dodge", "Honda", "Hyundai", "Jeep", "Mercedes Benz", "Nissan"];
 
 function formatPrecio(n: number) {
   return new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 }).format(n);
