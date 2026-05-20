@@ -4,14 +4,20 @@ import { saveServiciosStore } from "@/lib/servicios-store";
 import { Servicio } from "@/data/servicios";
 
 export async function PUT(req: NextRequest) {
-  const session = await getSession();
-  if (!session.isAdmin) {
-    return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  try {
+    const session = await getSession();
+    if (!session.isAdmin) {
+      return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+    }
+    if (!process.env.BLOB_READ_WRITE_TOKEN) {
+      return NextResponse.json({ error: "Almacenamiento no configurado" }, { status: 503 });
+    }
+    const data: Servicio[] = await req.json();
+    await saveServiciosStore(data);
+    return NextResponse.json({ ok: true });
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error("[/api/servicios PUT]", msg);
+    return NextResponse.json({ error: msg }, { status: 500 });
   }
-  if (!process.env.BLOB_READ_WRITE_TOKEN) {
-    return NextResponse.json({ error: "Almacenamiento no configurado" }, { status: 503 });
-  }
-  const data: Servicio[] = await req.json();
-  await saveServiciosStore(data);
-  return NextResponse.json({ ok: true });
 }
