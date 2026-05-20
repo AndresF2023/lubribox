@@ -22,7 +22,7 @@ export default function Header() {
       <div className="max-w-6xl mx-auto px-4 flex items-center justify-between h-16">
         {/* Logo */}
         <Link href="/" className="flex items-center">
-          <Image src="/logo.png" alt="LubriBox Car Service" width={160} height={27} priority className="h-9 w-auto" />
+          <Image src="/logo.svg" alt="LubriBox Car Service" width={180} height={46} priority className="h-10 w-auto" />
         </Link>
 
         {/* Desktop nav */}
