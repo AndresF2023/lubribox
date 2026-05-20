@@ -58,6 +58,27 @@ export default function ServiciosClient({ servicios }: { servicios: Servicio[] }
         <p className="text-neutral-500 text-sm mb-5 pl-4">
           El precio del aceite varía según la capacidad del motor de tu vehículo.
         </p>
+
+        {/* Toggle tipo de vehículo */}
+        <div className="flex mb-5 border border-neutral-700 w-fit">
+          <button
+            onClick={() => setTipoVehiculo("auto")}
+            className={`flex items-center gap-2 px-5 py-2.5 text-xs font-black uppercase tracking-widest transition-colors ${
+              tipoVehiculo === "auto" ? "bg-red-600 text-white" : "bg-neutral-800 text-neutral-400 hover:text-white"
+            }`}
+          >
+            <Car size={13} /> Auto
+          </button>
+          <button
+            onClick={() => setTipoVehiculo("camioneta")}
+            className={`flex items-center gap-2 px-5 py-2.5 text-xs font-black uppercase tracking-widest transition-colors border-l border-neutral-700 ${
+              tipoVehiculo === "camioneta" ? "bg-red-600 text-white" : "bg-neutral-800 text-neutral-400 hover:text-white"
+            }`}
+          >
+            <Truck size={13} /> Camioneta
+          </button>
+        </div>
+
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {/* Marca */}
           <div>
@@ -131,7 +152,7 @@ export default function ServiciosClient({ servicios }: { servicios: Servicio[] }
             </div>
             <div className="flex items-center gap-2 text-sm text-green-400 bg-green-900/30 px-3 py-1 border border-green-800">
               <CheckCircle size={14} />
-              Precios calculados para tu auto
+              Precios calculados para tu {tipoVehiculo}
             </div>
           </div>
         )}
@@ -142,32 +163,6 @@ export default function ServiciosClient({ servicios }: { servicios: Servicio[] }
             Seleccioná tu auto para ver el precio exacto. Sin selección se muestran los precios base.
           </div>
         )}
-      </div>
-
-      {/* Toggle Auto / Camioneta */}
-      <div className="flex mb-6 border border-neutral-700 w-fit">
-        <button
-          onClick={() => setTipoVehiculo("auto")}
-          className={`flex items-center gap-2 px-6 py-3 text-xs font-black uppercase tracking-widest transition-colors ${
-            tipoVehiculo === "auto"
-              ? "bg-red-600 text-white"
-              : "bg-neutral-900 text-neutral-400 hover:text-white"
-          }`}
-        >
-          <Car size={14} />
-          Auto
-        </button>
-        <button
-          onClick={() => setTipoVehiculo("camioneta")}
-          className={`flex items-center gap-2 px-6 py-3 text-xs font-black uppercase tracking-widest transition-colors border-l border-neutral-700 ${
-            tipoVehiculo === "camioneta"
-              ? "bg-red-600 text-white"
-              : "bg-neutral-900 text-neutral-400 hover:text-white"
-          }`}
-        >
-          <Truck size={14} />
-          Camioneta
-        </button>
       </div>
 
       {/* Filtro por categoría */}

@@ -6,7 +6,7 @@ import { Suspense } from "react";
 import { autos } from "@/data/autos";
 import { Servicio } from "@/data/servicios";
 import { getProximosDias, getHorariosDisponibles, formatearFecha } from "@/data/disponibilidad";
-import { CheckCircle, ChevronDown, Calendar, Clock } from "lucide-react";
+import { CheckCircle, ChevronDown, Calendar, Clock, Car, Truck } from "lucide-react";
 
 type Paso = 1 | 2 | 3 | 4;
 
@@ -20,6 +20,7 @@ function TurnosForm({ servicios }: { servicios: Servicio[] }) {
   const params = useSearchParams();
 
   const [paso, setPaso] = useState<Paso>(1);
+  const [tipoVehiculo, setTipoVehiculo] = useState<"auto" | "camioneta">("auto");
   const [marca, setMarca] = useState(params.get("marca") ?? "");
   const [modeloNombre, setModeloNombre] = useState(params.get("modelo") ?? "");
   const [año, setAño] = useState(params.get("año") ?? "");
@@ -134,6 +135,28 @@ function TurnosForm({ servicios }: { servicios: Servicio[] }) {
               <h2 className="text-lg font-black text-white uppercase tracking-wide">Tu vehículo y servicio</h2>
             </div>
 
+            {/* Toggle tipo de vehículo */}
+            <div className="flex mb-5 border border-neutral-700 w-fit">
+              <button
+                type="button"
+                onClick={() => { setTipoVehiculo("auto"); handleMarca(""); }}
+                className={`flex items-center gap-2 px-5 py-2.5 text-xs font-black uppercase tracking-widest transition-colors ${
+                  tipoVehiculo === "auto" ? "bg-red-600 text-white" : "bg-neutral-800 text-neutral-400 hover:text-white"
+                }`}
+              >
+                <Car size={13} /> Auto
+              </button>
+              <button
+                type="button"
+                onClick={() => { setTipoVehiculo("camioneta"); handleMarca(""); }}
+                className={`flex items-center gap-2 px-5 py-2.5 text-xs font-black uppercase tracking-widest transition-colors border-l border-neutral-700 ${
+                  tipoVehiculo === "camioneta" ? "bg-red-600 text-white" : "bg-neutral-800 text-neutral-400 hover:text-white"
+                }`}
+              >
+                <Truck size={13} /> Camioneta
+              </button>
+            </div>
+
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
               <div>
                 <label className={labelClass}>Marca</label>
@@ -202,6 +225,8 @@ function TurnosForm({ servicios }: { servicios: Servicio[] }) {
             {/* Resumen paso 1 */}
             <div className="flex flex-wrap gap-3 mb-6 p-4 bg-neutral-800 border border-neutral-700 text-sm">
               <span className="font-black text-white">{marca} {modeloNombre} {año}</span>
+              <span className="text-neutral-600">|</span>
+              <span className="text-red-400 text-xs uppercase font-black tracking-widest">{tipoVehiculo}</span>
               <span className="text-neutral-600">|</span>
               <span className="text-neutral-400">{servicioData?.nombre}</span>
               <button type="button" onClick={() => setPaso(1)} className="text-red-500 hover:text-red-400 ml-auto text-xs font-black uppercase tracking-widest">
