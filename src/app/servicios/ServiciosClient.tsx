@@ -5,6 +5,7 @@ import Link from "next/link";
 import { autos } from "@/data/autos";
 import { servicios, calcularPrecio, formatearPrecio } from "@/data/servicios";
 import { Clock, CheckCircle, ChevronDown, Zap } from "lucide-react";
+import { PreciosMap } from "@/lib/precios";
 
 type Categoria = "todos" | "paquetes" | "mantenimiento" | "frenos" | "suspension" | "otros";
 
@@ -20,7 +21,7 @@ const categorias: { id: Categoria; label: string }[] = [
 const selectClass =
   "w-full appearance-none bg-neutral-800 border border-neutral-600 text-white rounded-none px-4 py-3 pr-10 text-sm focus:outline-none focus:border-red-500 disabled:opacity-40 disabled:cursor-not-allowed";
 
-export default function ServiciosClient() {
+export default function ServiciosClient({ preciosMap }: { preciosMap: PreciosMap }) {
   const [marca, setMarca] = useState("");
   const [modeloNombre, setModeloNombre] = useState("");
   const [año, setAño] = useState("");
@@ -163,7 +164,10 @@ export default function ServiciosClient() {
       {/* Lista de servicios */}
       <div className="space-y-3">
         {serviciosFiltrados.map((s) => {
-          const precio = calcularPrecio(s, modeloData?.litrosAceite);
+          const sConPrecio = preciosMap[s.id]
+            ? { ...s, ...preciosMap[s.id] }
+            : s;
+          const precio = calcularPrecio(sConPrecio, modeloData?.litrosAceite);
           const abierto = expandido === s.id;
 
           return (
@@ -186,9 +190,9 @@ export default function ServiciosClient() {
                 </div>
                 <div className="text-right shrink-0">
                   <div className="text-2xl font-black text-red-500">{formatearPrecio(precio)}</div>
-                  {autoSeleccionado && s.precioPorLitro && (
+                  {autoSeleccionado && sConPrecio.precioPorLitro && (
                     <div className="text-xs text-neutral-500">
-                      base + {modeloData?.litrosAceite}L × {formatearPrecio(s.precioPorLitro)}
+                      base + {modeloData?.litrosAceite}L × {formatearPrecio(sConPrecio.precioPorLitro!)}
                     </div>
                   )}
                   <div className="flex items-center justify-end gap-1 text-xs text-neutral-500 mt-1">
