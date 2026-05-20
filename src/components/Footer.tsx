@@ -50,6 +50,28 @@ export default function Footer() {
         </div>
       </div>
 
+      {/* Mapa */}
+      <div className="border-t border-neutral-800">
+        <div className="max-w-6xl mx-auto px-4 py-8">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-1 h-5 bg-red-600" />
+            <h3 className="font-black text-white uppercase tracking-[0.15em] text-xs">Cómo llegar</h3>
+          </div>
+          <div className="w-full h-64 border border-neutral-700 overflow-hidden">
+            <iframe
+              src="https://www.google.com/maps?q=Emilio+Petorutti+2576,+C%C3%B3rdoba,+Argentina&output=embed"
+              width="100%"
+              height="100%"
+              style={{ border: 0, filter: "grayscale(1) invert(0.9) contrast(0.9)" }}
+              allowFullScreen
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              title="Ubicación LubriBox"
+            />
+          </div>
+        </div>
+      </div>
+
       <div className="border-t border-neutral-800 text-center text-neutral-600 text-xs py-4">
         © {new Date().getFullYear()} LubriBox Car Service. Todos los derechos reservados.
       </div>
