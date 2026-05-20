@@ -16,12 +16,13 @@ export default function Header() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="bg-black text-white sticky top-0 z-50 shadow-lg">
+    <header className="bg-neutral-950 text-white sticky top-0 z-50 border-b-2 border-red-600">
       <div className="max-w-6xl mx-auto px-4 flex items-center justify-between h-16">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 font-bold text-xl tracking-tight">
-          <span className="bg-red-600 text-white px-2 py-0.5 rounded font-black">LUBRI</span>
-          <span className="text-white">BOX</span>
+        <Link href="/" className="flex items-center gap-0 font-black text-xl tracking-tight">
+          <span className="bg-red-600 text-white px-2.5 py-1 font-black text-lg uppercase tracking-widest">LUBRI</span>
+          <span className="bg-neutral-800 text-white px-2.5 py-1 font-black text-lg uppercase tracking-widest border-y border-r border-neutral-700">BOX</span>
+          <span className="text-neutral-500 text-xs font-semibold uppercase tracking-widest ml-2 hidden sm:block">Car Service</span>
         </Link>
 
         {/* Desktop nav */}
@@ -30,10 +31,10 @@ export default function Header() {
             <Link
               key={href}
               href={href}
-              className={`px-4 py-2 rounded text-sm font-medium transition-colors ${
+              className={`px-4 py-2 text-sm font-bold uppercase tracking-wide transition-colors ${
                 pathname === href
                   ? "bg-red-600 text-white"
-                  : "text-gray-300 hover:text-white hover:bg-white/10"
+                  : "text-neutral-400 hover:text-white hover:bg-neutral-800"
               }`}
             >
               {label}
@@ -43,7 +44,7 @@ export default function Header() {
 
         {/* Mobile toggle */}
         <button
-          className="md:hidden p-2 rounded hover:bg-white/10 transition"
+          className="md:hidden p-2 hover:bg-neutral-800 transition"
           onClick={() => setOpen(!open)}
           aria-label="Menú"
         >
@@ -53,16 +54,16 @@ export default function Header() {
 
       {/* Mobile menu */}
       {open && (
-        <div className="md:hidden bg-black border-t border-white/10 px-4 pb-4">
+        <div className="md:hidden bg-neutral-950 border-t border-neutral-800 px-4 pb-4">
           {nav.map(({ href, label }) => (
             <Link
               key={href}
               href={href}
               onClick={() => setOpen(false)}
-              className={`block px-4 py-3 rounded text-sm font-medium my-1 transition-colors ${
+              className={`block px-4 py-3 text-sm font-bold uppercase tracking-wide my-1 transition-colors ${
                 pathname === href
                   ? "bg-red-600 text-white"
-                  : "text-gray-300 hover:text-white hover:bg-white/10"
+                  : "text-neutral-400 hover:text-white hover:bg-neutral-800"
               }`}
             >
               {label}

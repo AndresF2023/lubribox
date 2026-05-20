@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #0a0a0a;
+  --foreground: #ffffff;
 }
 
 @theme inline {
@@ -25,4 +25,26 @@ body {
 
 .animate-fadeIn {
   animation: fadeIn 0.4s ease both;
+}
+
+/* Diagonal red slash used in heroes and section breaks */
+.slash-red {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 35%;
+  width: 3px;
+  background: #dc2626;
+  transform: skewX(-12deg);
+  opacity: 0.7;
+}
+
+.slash-red-wide {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 33%;
+  width: 120px;
+  background: linear-gradient(to right, transparent, rgba(220,38,38,0.12), transparent);
+  transform: skewX(-12deg);
 }
