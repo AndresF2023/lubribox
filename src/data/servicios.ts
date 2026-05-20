@@ -4,9 +4,25 @@ export interface Servicio {
   descripcion: string;
   duracionMin: number;
   precioBase: number;
-  precioPorLitro?: number; // para aceite: precio base + litros * precio/litro
+  precioPorLitro?: number;
+  precioBaseCamioneta?: number;
+  precioPorLitroCamioneta?: number;
   incluye: string[];
   categoria: "mantenimiento" | "frenos" | "suspension" | "otros" | "paquetes";
+}
+
+export type TipoVehiculo = "auto" | "camioneta";
+
+export function getPrecioBase(s: Servicio, tipo: TipoVehiculo): number {
+  return tipo === "camioneta" && s.precioBaseCamioneta != null
+    ? s.precioBaseCamioneta
+    : s.precioBase;
+}
+
+export function getPrecioPorLitro(s: Servicio, tipo: TipoVehiculo): number | undefined {
+  return tipo === "camioneta" && s.precioPorLitroCamioneta != null
+    ? s.precioPorLitroCamioneta
+    : s.precioPorLitro;
 }
 
 export const servicios: Servicio[] = [
@@ -156,11 +172,13 @@ export const servicios: Servicio[] = [
   },
 ];
 
-export function calcularPrecio(servicio: Servicio, litrosAceite?: number): number {
-  if (servicio.precioPorLitro && litrosAceite) {
-    return servicio.precioBase + litrosAceite * servicio.precioPorLitro;
+export function calcularPrecio(servicio: Servicio, litrosAceite?: number, tipo: TipoVehiculo = "auto"): number {
+  const base = getPrecioBase(servicio, tipo);
+  const porLitro = getPrecioPorLitro(servicio, tipo);
+  if (porLitro && litrosAceite) {
+    return base + litrosAceite * porLitro;
   }
-  return servicio.precioBase;
+  return base;
 }
 
 export function formatearPrecio(precio: number): string {

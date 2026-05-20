@@ -40,6 +40,8 @@ const SERVICIO_VACIO: Omit<Servicio, "id"> = {
   duracionMin: 30,
   precioBase: 0,
   precioPorLitro: undefined,
+  precioBaseCamioneta: undefined,
+  precioPorLitroCamioneta: undefined,
   incluye: [],
 };
 
@@ -53,18 +55,11 @@ export default function DashboardClient({ serviciosIniciales }: Props) {
   const [nuevoItem, setNuevoItem] = useState("");
   const [tienePrecioPorLitro, setTienePrecioPorLitro] = useState(false);
 
-  // ── Editar precio de servicio existente ──────────────────────────────
-  function handlePrecioBase(id: string, valor: string) {
+  // ── Editar precios de servicio existente ─────────────────────────────
+  function handleCampo(id: string, campo: keyof Servicio, valor: string) {
     const num = parseInt(valor.replace(/\D/g, ""), 10);
     setServicios((prev) =>
-      prev.map((s) => (s.id === id ? { ...s, precioBase: isNaN(num) ? 0 : num } : s))
-    );
-  }
-
-  function handlePrecioPorLitro(id: string, valor: string) {
-    const num = parseInt(valor.replace(/\D/g, ""), 10);
-    setServicios((prev) =>
-      prev.map((s) => (s.id === id ? { ...s, precioPorLitro: isNaN(num) ? undefined : num } : s))
+      prev.map((s) => (s.id === id ? { ...s, [campo]: isNaN(num) ? undefined : num } : s))
     );
   }
 
@@ -204,39 +199,69 @@ export default function DashboardClient({ serviciosIniciales }: Props) {
                         <p className="font-black text-white text-sm uppercase tracking-wide mb-1">{s.nombre}</p>
                         <p className="text-neutral-500 text-xs leading-relaxed">{s.descripcion}</p>
                       </div>
-                      <div className="flex flex-wrap items-start gap-4 shrink-0">
-                        {/* Precio base */}
-                        <div>
-                          <label className={labelClass}>Precio base</label>
-                          <div className="flex items-center gap-2">
-                            <span className="text-neutral-500 text-sm">$</span>
-                            <input
-                              type="text"
-                              inputMode="numeric"
-                              value={s.precioBase.toLocaleString("es-AR")}
-                              onChange={(e) => handlePrecioBase(s.id, e.target.value)}
-                              className="w-32 bg-neutral-800 border border-neutral-600 text-white px-3 py-2 text-sm font-black text-right focus:outline-none focus:border-red-500 rounded-none"
-                            />
-                          </div>
-                          <p className="text-neutral-600 text-xs mt-1 text-right">{formatearPrecio(s.precioBase)}</p>
-                        </div>
-                        {/* Precio por litro */}
-                        {s.precioPorLitro !== undefined && (
+                      <div className="flex flex-wrap items-start gap-6 shrink-0">
+                        {/* Columna Auto */}
+                        <div className="space-y-3">
+                          <p className="text-xs font-black text-neutral-500 uppercase tracking-widest flex items-center gap-1">Auto</p>
                           <div>
-                            <label className={labelClass}>Precio / litro</label>
-                            <div className="flex items-center gap-2">
+                            <label className={labelClass}>Precio base</label>
+                            <div className="flex items-center gap-1">
                               <span className="text-neutral-500 text-sm">$</span>
                               <input
-                                type="text"
-                                inputMode="numeric"
-                                value={(s.precioPorLitro ?? 0).toLocaleString("es-AR")}
-                                onChange={(e) => handlePrecioPorLitro(s.id, e.target.value)}
-                                className="w-32 bg-neutral-800 border border-neutral-600 text-white px-3 py-2 text-sm font-black text-right focus:outline-none focus:border-red-500 rounded-none"
+                                type="text" inputMode="numeric"
+                                value={s.precioBase.toLocaleString("es-AR")}
+                                onChange={(e) => handleCampo(s.id, "precioBase", e.target.value)}
+                                className="w-28 bg-neutral-800 border border-neutral-600 text-white px-3 py-2 text-sm font-black text-right focus:outline-none focus:border-red-500 rounded-none"
                               />
                             </div>
-                            <p className="text-neutral-600 text-xs mt-1 text-right">{formatearPrecio(s.precioPorLitro ?? 0)} / L</p>
                           </div>
-                        )}
+                          {s.precioPorLitro !== undefined && (
+                            <div>
+                              <label className={labelClass}>$ / litro</label>
+                              <div className="flex items-center gap-1">
+                                <span className="text-neutral-500 text-sm">$</span>
+                                <input
+                                  type="text" inputMode="numeric"
+                                  value={(s.precioPorLitro ?? 0).toLocaleString("es-AR")}
+                                  onChange={(e) => handleCampo(s.id, "precioPorLitro", e.target.value)}
+                                  className="w-28 bg-neutral-800 border border-neutral-600 text-white px-3 py-2 text-sm font-black text-right focus:outline-none focus:border-red-500 rounded-none"
+                                />
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                        {/* Columna Camioneta */}
+                        <div className="space-y-3">
+                          <p className="text-xs font-black text-red-600 uppercase tracking-widest">Camioneta</p>
+                          <div>
+                            <label className={labelClass}>Precio base</label>
+                            <div className="flex items-center gap-1">
+                              <span className="text-neutral-500 text-sm">$</span>
+                              <input
+                                type="text" inputMode="numeric"
+                                value={(s.precioBaseCamioneta ?? "").toLocaleString?.() ?? ""}
+                                placeholder={s.precioBase.toLocaleString("es-AR")}
+                                onChange={(e) => handleCampo(s.id, "precioBaseCamioneta", e.target.value)}
+                                className="w-28 bg-neutral-800 border border-red-900/50 text-white px-3 py-2 text-sm font-black text-right focus:outline-none focus:border-red-500 rounded-none placeholder:text-neutral-600"
+                              />
+                            </div>
+                          </div>
+                          {s.precioPorLitro !== undefined && (
+                            <div>
+                              <label className={labelClass}>$ / litro</label>
+                              <div className="flex items-center gap-1">
+                                <span className="text-neutral-500 text-sm">$</span>
+                                <input
+                                  type="text" inputMode="numeric"
+                                  value={(s.precioPorLitroCamioneta ?? "").toLocaleString?.() ?? ""}
+                                  placeholder={(s.precioPorLitro ?? 0).toLocaleString("es-AR")}
+                                  onChange={(e) => handleCampo(s.id, "precioPorLitroCamioneta", e.target.value)}
+                                  className="w-28 bg-neutral-800 border border-red-900/50 text-white px-3 py-2 text-sm font-black text-right focus:outline-none focus:border-red-500 rounded-none placeholder:text-neutral-600"
+                                />
+                              </div>
+                            </div>
+                          )}
+                        </div>
                         {/* Eliminar */}
                         <div className="flex items-end pb-1">
                           <button
@@ -322,14 +347,23 @@ export default function DashboardClient({ serviciosIniciales }: Props) {
                   />
                 </div>
                 <div>
-                  <label className={labelClass}>Precio base ($)</label>
+                  <label className={labelClass}>Precio base — Auto ($)</label>
                   <input
-                    type="text"
-                    inputMode="numeric"
+                    type="text" inputMode="numeric"
                     value={nuevoServicio.precioBase || ""}
                     onChange={(e) => setNuevoServicio((p) => ({ ...p, precioBase: parseInt(e.target.value.replace(/\D/g, "")) || 0 }))}
                     className={inputClass}
                     placeholder="0"
+                  />
+                </div>
+                <div>
+                  <label className={labelClass}>Precio base — Camioneta ($)</label>
+                  <input
+                    type="text" inputMode="numeric"
+                    value={nuevoServicio.precioBaseCamioneta || ""}
+                    onChange={(e) => setNuevoServicio((p) => ({ ...p, precioBaseCamioneta: parseInt(e.target.value.replace(/\D/g, "")) || undefined }))}
+                    className={inputClass}
+                    placeholder="Dejar vacío = igual a auto"
                   />
                 </div>
                 <div>
@@ -340,17 +374,25 @@ export default function DashboardClient({ serviciosIniciales }: Props) {
                       onChange={(e) => setTienePrecioPorLitro(e.target.checked)}
                       className="mr-2 accent-red-600"
                     />
-                    Precio por litro de aceite ($)
+                    Precio por litro de aceite
                   </label>
                   {tienePrecioPorLitro && (
-                    <input
-                      type="text"
-                      inputMode="numeric"
-                      value={nuevoServicio.precioPorLitro || ""}
-                      onChange={(e) => setNuevoServicio((p) => ({ ...p, precioPorLitro: parseInt(e.target.value.replace(/\D/g, "")) || 0 }))}
-                      className={inputClass}
-                      placeholder="0"
-                    />
+                    <div className="grid grid-cols-2 gap-2 mt-2">
+                      <input
+                        type="text" inputMode="numeric"
+                        value={nuevoServicio.precioPorLitro || ""}
+                        onChange={(e) => setNuevoServicio((p) => ({ ...p, precioPorLitro: parseInt(e.target.value.replace(/\D/g, "")) || 0 }))}
+                        className={inputClass}
+                        placeholder="Auto ($/L)"
+                      />
+                      <input
+                        type="text" inputMode="numeric"
+                        value={nuevoServicio.precioPorLitroCamioneta || ""}
+                        onChange={(e) => setNuevoServicio((p) => ({ ...p, precioPorLitroCamioneta: parseInt(e.target.value.replace(/\D/g, "")) || undefined }))}
+                        className={inputClass}
+                        placeholder="Camioneta (vacío=igual)"
+                      />
+                    </div>
                   )}
                 </div>
               </div>

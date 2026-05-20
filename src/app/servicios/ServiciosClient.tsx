@@ -3,8 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { autos } from "@/data/autos";
-import { Servicio, calcularPrecio, formatearPrecio } from "@/data/servicios";
-import { Clock, CheckCircle, ChevronDown, Zap } from "lucide-react";
+import { Servicio, TipoVehiculo, calcularPrecio, formatearPrecio, getPrecioPorLitro } from "@/data/servicios";
+import { Clock, CheckCircle, ChevronDown, Zap, Truck, Car } from "lucide-react";
 
 type Categoria = "todos" | "paquetes" | "mantenimiento" | "frenos" | "suspension" | "otros";
 
@@ -26,6 +26,7 @@ export default function ServiciosClient({ servicios }: { servicios: Servicio[] }
   const [año, setAño] = useState("");
   const [categoria, setCategoria] = useState<Categoria>("todos");
   const [expandido, setExpandido] = useState<string | null>(null);
+  const [tipoVehiculo, setTipoVehiculo] = useState<TipoVehiculo>("auto");
 
   const marcaData = autos.find((a) => a.marca === marca);
   const modeloData = marcaData?.modelos.find((m) => m.nombre === modeloNombre);
@@ -143,6 +144,32 @@ export default function ServiciosClient({ servicios }: { servicios: Servicio[] }
         )}
       </div>
 
+      {/* Toggle Auto / Camioneta */}
+      <div className="flex mb-6 border border-neutral-700 w-fit">
+        <button
+          onClick={() => setTipoVehiculo("auto")}
+          className={`flex items-center gap-2 px-6 py-3 text-xs font-black uppercase tracking-widest transition-colors ${
+            tipoVehiculo === "auto"
+              ? "bg-red-600 text-white"
+              : "bg-neutral-900 text-neutral-400 hover:text-white"
+          }`}
+        >
+          <Car size={14} />
+          Auto
+        </button>
+        <button
+          onClick={() => setTipoVehiculo("camioneta")}
+          className={`flex items-center gap-2 px-6 py-3 text-xs font-black uppercase tracking-widest transition-colors border-l border-neutral-700 ${
+            tipoVehiculo === "camioneta"
+              ? "bg-red-600 text-white"
+              : "bg-neutral-900 text-neutral-400 hover:text-white"
+          }`}
+        >
+          <Truck size={14} />
+          Camioneta
+        </button>
+      </div>
+
       {/* Filtro por categoría */}
       <div className="flex flex-wrap gap-2 mb-6">
         {categorias.map(({ id, label }) => (
@@ -163,7 +190,8 @@ export default function ServiciosClient({ servicios }: { servicios: Servicio[] }
       {/* Lista de servicios */}
       <div className="space-y-3">
         {serviciosFiltrados.map((s) => {
-          const precio = calcularPrecio(s, modeloData?.litrosAceite);
+          const precio = calcularPrecio(s, modeloData?.litrosAceite, tipoVehiculo);
+          const precioPorLitroActual = getPrecioPorLitro(s, tipoVehiculo);
           const abierto = expandido === s.id;
 
           return (
@@ -186,9 +214,9 @@ export default function ServiciosClient({ servicios }: { servicios: Servicio[] }
                 </div>
                 <div className="text-right shrink-0">
                   <div className="text-2xl font-black text-red-500">{formatearPrecio(precio)}</div>
-                  {autoSeleccionado && s.precioPorLitro && (
+                  {autoSeleccionado && precioPorLitroActual && (
                     <div className="text-xs text-neutral-500">
-                      base + {modeloData?.litrosAceite}L × {formatearPrecio(s.precioPorLitro!)}
+                      base + {modeloData?.litrosAceite}L × {formatearPrecio(precioPorLitroActual)}
                     </div>
                   )}
                   <div className="flex items-center justify-end gap-1 text-xs text-neutral-500 mt-1">
