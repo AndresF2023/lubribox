@@ -1,14 +1,15 @@
-// Horarios disponibles simulados para los próximos 7 días
-export const HORARIOS = ["08:00", "09:00", "10:00", "11:00", "12:00", "14:00", "15:00", "16:00", "17:00"];
+// Horarios disponibles — Lun-Vie 8:30 a 19:00 / Sáb 9:00 a 14:00
+export const HORARIOS = ["08:30", "09:30", "10:30", "11:30", "12:30", "14:00", "15:00", "16:00", "17:00", "18:00"];
+export const HORARIOS_SABADO = ["09:00", "10:00", "11:00", "12:00", "13:00"];
 
 // Slots ocupados (simulados)
 const OCUPADOS: Record<string, string[]> = {
-  0: ["09:00", "11:00", "15:00"], // lunes
-  1: ["08:00", "10:00", "14:00", "17:00"],
-  2: ["09:00", "12:00"],
-  3: ["10:00", "11:00", "15:00", "16:00"],
-  4: ["08:00", "09:00", "14:00"],
-  5: ["10:00", "11:00"], // sábado
+  1: ["09:30", "11:30", "15:00"], // lunes
+  2: ["08:30", "10:30", "14:00", "17:00"], // martes
+  3: ["09:30", "12:30"], // miércoles
+  4: ["10:30", "11:30", "15:00", "16:00"], // jueves
+  5: ["08:30", "09:30", "14:00"], // viernes
+  6: ["10:00", "11:00"], // sábado
 };
 
 export function getProximosDias(cantidad = 7): Date[] {
@@ -28,8 +29,8 @@ export function getProximosDias(cantidad = 7): Date[] {
 export function getHorariosDisponibles(fecha: Date): string[] {
   const dow = fecha.getDay(); // 0=Dom ... 6=Sáb
   const ocupados = OCUPADOS[dow] ?? [];
-  // sábado: solo hasta las 13:00
-  const horariosDelDia = dow === 6 ? HORARIOS.filter((h) => h <= "13:00") : HORARIOS;
+  // sábado: horarios especiales hasta las 14:00
+  const horariosDelDia = dow === 6 ? HORARIOS_SABADO : HORARIOS;
   return horariosDelDia.filter((h) => !ocupados.includes(h));
 }
 

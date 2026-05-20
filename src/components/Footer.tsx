@@ -25,7 +25,7 @@ export default function Footer() {
             </li>
             <li className="flex items-center gap-3">
               <MapPin size={14} className="text-red-500 shrink-0" />
-              Córdoba, Argentina
+              Emilio Petorutti 2576, Córdoba
             </li>
           </ul>
         </div>
@@ -36,11 +36,11 @@ export default function Footer() {
           <ul className="space-y-3 text-sm text-neutral-400">
             <li className="flex items-center gap-3">
               <Clock size={14} className="text-red-500 shrink-0" />
-              Lun–Vie: 08:00 a 18:00
+              Lun–Vie: 08:30 a 19:00
             </li>
             <li className="flex items-center gap-3">
               <Clock size={14} className="text-red-500 shrink-0" />
-              Sáb: 08:00 a 13:00
+              Sáb: 09:00 a 14:00
             </li>
             <li className="flex items-center gap-3">
               <Clock size={14} className="text-red-500 shrink-0" />
