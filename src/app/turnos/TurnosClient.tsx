@@ -69,18 +69,18 @@ function buildWhatsAppUrl(
   });
 
   const lines = [
-    `🔧 *NUEVA SOLICITUD DE TURNO — LubriBox*`,
+    `*NUEVA SOLICITUD DE TURNO — LubriBox*`,
     ``,
-    `👤 *Cliente:* ${clienteNombre}`,
-    `📞 *Teléfono:* ${clienteTelefono}`,
-    `📧 *Email:* ${clienteEmail}`,
-    `🚗 *Vehículo:* ${vehiculo} (${tipoVehiculo})`,
-    `🔧 *Servicio:* ${servicio}`,
-    `📅 *Día:* ${fechaStr}`,
-    `⏰ *Horario:* ${hora} hs`,
-    clienteComentario ? `💬 *Comentarios:* ${clienteComentario}` : "",
+    `*Cliente:* ${clienteNombre}`,
+    `*Teléfono:* ${clienteTelefono}`,
+    `*Email:* ${clienteEmail}`,
+    `*Vehículo:* ${vehiculo} (${tipoVehiculo})`,
+    `*Servicio:* ${servicio}`,
+    `*Día:* ${fechaStr}`,
+    `*Horario:* ${hora} hs`,
+    clienteComentario ? `*Comentarios:* ${clienteComentario}` : "",
     ``,
-    `📆 Agregar al calendario:`,
+    `Agregar al calendario:`,
     calendarUrl,
   ].filter((l) => l !== undefined);
 
