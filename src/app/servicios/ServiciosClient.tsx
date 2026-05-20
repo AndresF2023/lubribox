@@ -6,10 +6,11 @@ import { autos } from "@/data/autos";
 import { servicios, calcularPrecio, formatearPrecio } from "@/data/servicios";
 import { Clock, CheckCircle, ChevronDown, Zap } from "lucide-react";
 
-type Categoria = "todos" | "mantenimiento" | "frenos" | "suspension" | "otros";
+type Categoria = "todos" | "paquetes" | "mantenimiento" | "frenos" | "suspension" | "otros";
 
 const categorias: { id: Categoria; label: string }[] = [
   { id: "todos", label: "Todos" },
+  { id: "paquetes", label: "Paquetes" },
   { id: "mantenimiento", label: "Mantenimiento" },
   { id: "frenos", label: "Frenos" },
   { id: "suspension", label: "Suspensión" },

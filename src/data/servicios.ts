@@ -6,10 +6,61 @@ export interface Servicio {
   precioBase: number;
   precioPorLitro?: number; // para aceite: precio base + litros * precio/litro
   incluye: string[];
-  categoria: "mantenimiento" | "frenos" | "suspension" | "otros";
+  categoria: "mantenimiento" | "frenos" | "suspension" | "otros" | "paquetes";
 }
 
 export const servicios: Servicio[] = [
+  {
+    id: "service-basico",
+    nombre: "Service Básico",
+    descripcion: "Paquete esencial de mantenimiento para mantener tu auto en óptimas condiciones.",
+    duracionMin: 45,
+    precioBase: 15000,
+    precioPorLitro: 1800,
+    incluye: [
+      "Cambio de aceite",
+      "Cambio de filtro de aire",
+      "Cambio de filtro de aceite",
+    ],
+    categoria: "paquetes",
+  },
+  {
+    id: "service-full",
+    nombre: "Service Full",
+    descripcion: "Servicio completo de mantenimiento con lavado incluido. La opción más popular.",
+    duracionMin: 90,
+    precioBase: 28000,
+    precioPorLitro: 1800,
+    incluye: [
+      "Cambio de aceite",
+      "Cambio de filtro de aire",
+      "Cambio de filtro de aceite",
+      "Cambio de filtro de combustible",
+      "Rotación de cubiertas",
+      "Chequeo mecánico",
+      "Lavado gratis",
+    ],
+    categoria: "paquetes",
+  },
+  {
+    id: "service-premium-gold",
+    nombre: "Service Premium Gold",
+    descripcion: "El servicio más completo. Chequeo computarizado, alineado, balanceo y lavado. Máxima protección para tu vehículo.",
+    duracionMin: 150,
+    precioBase: 45000,
+    precioPorLitro: 1800,
+    incluye: [
+      "Cambio de aceite",
+      "Cambio de filtro de aire",
+      "Cambio de filtro de aceite",
+      "Cambio de filtro de combustible",
+      "Rotación de cubiertas",
+      "Chequeo mecánico computarizado",
+      "Alineado y balanceado de cubiertas",
+      "Lavado gratis",
+    ],
+    categoria: "paquetes",
+  },
   {
     id: "cambio-aceite-mineral",
     nombre: "Cambio de Aceite Mineral",
