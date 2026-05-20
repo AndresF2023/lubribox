@@ -3,13 +3,11 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { CheckCircle, AlertCircle, LogOut, Save } from "lucide-react";
+import { CheckCircle, AlertCircle, LogOut, Save, Trash2, Plus, X } from "lucide-react";
 import { Servicio, formatearPrecio } from "@/data/servicios";
-import { PreciosMap } from "@/lib/precios";
 
 interface Props {
-  servicios: Servicio[];
-  preciosIniciales: PreciosMap;
+  serviciosIniciales: Servicio[];
 }
 
 const CATEGORIAS: Record<string, string> = {
@@ -20,42 +18,110 @@ const CATEGORIAS: Record<string, string> = {
   otros: "Otros",
 };
 
-export default function DashboardClient({ servicios, preciosIniciales }: Props) {
+const inputClass =
+  "w-full bg-neutral-800 border border-neutral-600 text-white px-3 py-2 text-sm focus:outline-none focus:border-red-500 rounded-none";
+
+const labelClass = "block text-xs font-black text-neutral-400 uppercase tracking-[0.12em] mb-1.5";
+
+function generarId(nombre: string): string {
+  return nombre
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "")
+    .slice(0, 40);
+}
+
+const SERVICIO_VACIO: Omit<Servicio, "id"> = {
+  nombre: "",
+  descripcion: "",
+  categoria: "mantenimiento",
+  duracionMin: 30,
+  precioBase: 0,
+  precioPorLitro: undefined,
+  incluye: [],
+};
+
+export default function DashboardClient({ serviciosIniciales }: Props) {
   const router = useRouter();
-  const [precios, setPrecios] = useState<PreciosMap>(preciosIniciales);
+  const [servicios, setServicios] = useState<Servicio[]>(serviciosIniciales);
   const [guardando, setGuardando] = useState(false);
   const [mensaje, setMensaje] = useState<{ tipo: "ok" | "error"; texto: string } | null>(null);
+  const [mostrarForm, setMostrarForm] = useState(false);
+  const [nuevoServicio, setNuevoServicio] = useState<Omit<Servicio, "id">>(SERVICIO_VACIO);
+  const [nuevoItem, setNuevoItem] = useState("");
+  const [tienePrecioPorLitro, setTienePrecioPorLitro] = useState(false);
 
+  // ── Editar precio de servicio existente ──────────────────────────────
   function handlePrecioBase(id: string, valor: string) {
     const num = parseInt(valor.replace(/\D/g, ""), 10);
-    setPrecios((prev) => ({
-      ...prev,
-      [id]: { ...prev[id], precioBase: isNaN(num) ? 0 : num },
-    }));
+    setServicios((prev) =>
+      prev.map((s) => (s.id === id ? { ...s, precioBase: isNaN(num) ? 0 : num } : s))
+    );
   }
 
   function handlePrecioPorLitro(id: string, valor: string) {
     const num = parseInt(valor.replace(/\D/g, ""), 10);
-    setPrecios((prev) => ({
+    setServicios((prev) =>
+      prev.map((s) => (s.id === id ? { ...s, precioPorLitro: isNaN(num) ? undefined : num } : s))
+    );
+  }
+
+  // ── Eliminar servicio ────────────────────────────────────────────────
+  function eliminar(id: string) {
+    if (!confirm("¿Eliminar este servicio?")) return;
+    setServicios((prev) => prev.filter((s) => s.id !== id));
+  }
+
+  // ── Agregar servicio ─────────────────────────────────────────────────
+  function agregarItem() {
+    if (!nuevoItem.trim()) return;
+    setNuevoServicio((prev) => ({ ...prev, incluye: [...prev.incluye, nuevoItem.trim()] }));
+    setNuevoItem("");
+  }
+
+  function quitarItem(idx: number) {
+    setNuevoServicio((prev) => ({
       ...prev,
-      [id]: { ...prev[id], precioPorLitro: isNaN(num) ? undefined : num },
+      incluye: prev.incluye.filter((_, i) => i !== idx),
     }));
   }
 
+  function agregarServicio() {
+    if (!nuevoServicio.nombre.trim() || !nuevoServicio.descripcion.trim()) {
+      setMensaje({ tipo: "error", texto: "Completá nombre y descripción" });
+      return;
+    }
+    const id = generarId(nuevoServicio.nombre);
+    const s: Servicio = {
+      ...nuevoServicio,
+      id,
+      precioPorLitro: tienePrecioPorLitro ? nuevoServicio.precioPorLitro : undefined,
+    };
+    setServicios((prev) => [...prev, s]);
+    setNuevoServicio(SERVICIO_VACIO);
+    setNuevoItem("");
+    setTienePrecioPorLitro(false);
+    setMostrarForm(false);
+    setMensaje(null);
+  }
+
+  // ── Guardar en blob ──────────────────────────────────────────────────
   async function guardar() {
     setGuardando(true);
     setMensaje(null);
     try {
-      const res = await fetch("/api/precios", {
+      const res = await fetch("/api/servicios", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(precios),
+        body: JSON.stringify(servicios),
       });
       if (!res.ok) {
         const data = await res.json();
         setMensaje({ tipo: "error", texto: data.error ?? "Error al guardar" });
       } else {
-        setMensaje({ tipo: "ok", texto: "Precios actualizados correctamente" });
+        setMensaje({ tipo: "ok", texto: "Cambios guardados correctamente" });
       }
     } catch {
       setMensaje({ tipo: "error", texto: "Error de conexión" });
@@ -103,7 +169,7 @@ export default function DashboardClient({ servicios, preciosIniciales }: Props) 
         <div className="mb-8">
           <span className="text-red-500 text-xs font-black uppercase tracking-[0.2em] block mb-2">Administración</span>
           <h1 className="text-3xl font-black uppercase tracking-tight">
-            Gestión de <span className="text-red-500">Precios</span>
+            Gestión de <span className="text-red-500">Servicios</span>
           </h1>
           <div className="w-12 h-1 bg-red-600 mt-3" />
         </div>
@@ -131,73 +197,225 @@ export default function DashboardClient({ servicios, preciosIniciales }: Props) 
                 <span className="flex-1 border-t border-neutral-800" />
               </h2>
               <div className="space-y-3">
-                {items.map((s) => {
-                  const p = precios[s.id] ?? { precioBase: s.precioBase, precioPorLitro: s.precioPorLitro };
-                  return (
-                    <div key={s.id} className="bg-neutral-900 border border-neutral-700 p-5">
-                      <div className="flex flex-wrap items-start justify-between gap-4">
-                        <div className="flex-1 min-w-0">
-                          <p className="font-black text-white text-sm uppercase tracking-wide mb-1">{s.nombre}</p>
-                          <p className="text-neutral-500 text-xs leading-relaxed">{s.descripcion}</p>
+                {items.map((s) => (
+                  <div key={s.id} className="bg-neutral-900 border border-neutral-700 p-5">
+                    <div className="flex flex-wrap items-start justify-between gap-4">
+                      <div className="flex-1 min-w-0">
+                        <p className="font-black text-white text-sm uppercase tracking-wide mb-1">{s.nombre}</p>
+                        <p className="text-neutral-500 text-xs leading-relaxed">{s.descripcion}</p>
+                      </div>
+                      <div className="flex flex-wrap items-start gap-4 shrink-0">
+                        {/* Precio base */}
+                        <div>
+                          <label className={labelClass}>Precio base</label>
+                          <div className="flex items-center gap-2">
+                            <span className="text-neutral-500 text-sm">$</span>
+                            <input
+                              type="text"
+                              inputMode="numeric"
+                              value={s.precioBase.toLocaleString("es-AR")}
+                              onChange={(e) => handlePrecioBase(s.id, e.target.value)}
+                              className="w-32 bg-neutral-800 border border-neutral-600 text-white px-3 py-2 text-sm font-black text-right focus:outline-none focus:border-red-500 rounded-none"
+                            />
+                          </div>
+                          <p className="text-neutral-600 text-xs mt-1 text-right">{formatearPrecio(s.precioBase)}</p>
                         </div>
-                        <div className="flex flex-wrap gap-4 shrink-0">
+                        {/* Precio por litro */}
+                        {s.precioPorLitro !== undefined && (
                           <div>
-                            <label className="block text-xs font-black text-neutral-400 uppercase tracking-[0.12em] mb-1.5">
-                              Precio base
-                            </label>
+                            <label className={labelClass}>Precio / litro</label>
                             <div className="flex items-center gap-2">
                               <span className="text-neutral-500 text-sm">$</span>
                               <input
                                 type="text"
                                 inputMode="numeric"
-                                value={p.precioBase.toLocaleString("es-AR")}
-                                onChange={(e) => handlePrecioBase(s.id, e.target.value)}
+                                value={(s.precioPorLitro ?? 0).toLocaleString("es-AR")}
+                                onChange={(e) => handlePrecioPorLitro(s.id, e.target.value)}
                                 className="w-32 bg-neutral-800 border border-neutral-600 text-white px-3 py-2 text-sm font-black text-right focus:outline-none focus:border-red-500 rounded-none"
                               />
                             </div>
-                            <p className="text-neutral-600 text-xs mt-1 text-right">
-                              = {formatearPrecio(p.precioBase)}
-                            </p>
+                            <p className="text-neutral-600 text-xs mt-1 text-right">{formatearPrecio(s.precioPorLitro ?? 0)} / L</p>
                           </div>
-                          {s.precioPorLitro !== undefined && (
-                            <div>
-                              <label className="block text-xs font-black text-neutral-400 uppercase tracking-[0.12em] mb-1.5">
-                                Precio / litro
-                              </label>
-                              <div className="flex items-center gap-2">
-                                <span className="text-neutral-500 text-sm">$</span>
-                                <input
-                                  type="text"
-                                  inputMode="numeric"
-                                  value={(p.precioPorLitro ?? 0).toLocaleString("es-AR")}
-                                  onChange={(e) => handlePrecioPorLitro(s.id, e.target.value)}
-                                  className="w-32 bg-neutral-800 border border-neutral-600 text-white px-3 py-2 text-sm font-black text-right focus:outline-none focus:border-red-500 rounded-none"
-                                />
-                              </div>
-                              <p className="text-neutral-600 text-xs mt-1 text-right">
-                                = {formatearPrecio(p.precioPorLitro ?? 0)} / L
-                              </p>
-                            </div>
-                          )}
+                        )}
+                        {/* Eliminar */}
+                        <div className="flex items-end pb-1">
+                          <button
+                            onClick={() => eliminar(s.id)}
+                            className="flex items-center gap-1.5 text-xs font-black uppercase tracking-widest text-neutral-500 hover:text-red-500 transition-colors px-3 py-2 border border-neutral-700 hover:border-red-900"
+                          >
+                            <Trash2 size={13} />
+                            Eliminar
+                          </button>
                         </div>
                       </div>
                     </div>
-                  );
-                })}
+                  </div>
+                ))}
               </div>
             </div>
           ))}
         </div>
 
+        {/* Agregar nuevo servicio */}
+        <div className="mt-10">
+          {!mostrarForm ? (
+            <button
+              onClick={() => setMostrarForm(true)}
+              className="flex items-center gap-2 border border-dashed border-neutral-600 hover:border-red-600 text-neutral-400 hover:text-white font-black uppercase tracking-widest text-xs px-6 py-4 w-full justify-center transition-colors"
+            >
+              <Plus size={14} />
+              Agregar nuevo servicio
+            </button>
+          ) : (
+            <div className="bg-neutral-900 border border-neutral-700 p-6">
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                  <div className="w-1 h-6 bg-red-600" />
+                  <h3 className="font-black text-white uppercase tracking-wide text-sm">Nuevo servicio</h3>
+                </div>
+                <button onClick={() => setMostrarForm(false)} className="text-neutral-500 hover:text-white">
+                  <X size={18} />
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                <div className="sm:col-span-2">
+                  <label className={labelClass}>Nombre *</label>
+                  <input
+                    type="text"
+                    value={nuevoServicio.nombre}
+                    onChange={(e) => setNuevoServicio((p) => ({ ...p, nombre: e.target.value }))}
+                    className={inputClass}
+                    placeholder="Ej: Cambio de correa"
+                  />
+                </div>
+                <div className="sm:col-span-2">
+                  <label className={labelClass}>Descripción *</label>
+                  <textarea
+                    rows={2}
+                    value={nuevoServicio.descripcion}
+                    onChange={(e) => setNuevoServicio((p) => ({ ...p, descripcion: e.target.value }))}
+                    className={`${inputClass} resize-none`}
+                    placeholder="Breve descripción del servicio"
+                  />
+                </div>
+                <div>
+                  <label className={labelClass}>Categoría</label>
+                  <select
+                    value={nuevoServicio.categoria}
+                    onChange={(e) => setNuevoServicio((p) => ({ ...p, categoria: e.target.value as Servicio["categoria"] }))}
+                    className={inputClass}
+                  >
+                    {Object.entries(CATEGORIAS).map(([val, lbl]) => (
+                      <option key={val} value={val}>{lbl}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className={labelClass}>Duración (minutos)</label>
+                  <input
+                    type="number"
+                    min={5}
+                    value={nuevoServicio.duracionMin}
+                    onChange={(e) => setNuevoServicio((p) => ({ ...p, duracionMin: parseInt(e.target.value) || 30 }))}
+                    className={inputClass}
+                  />
+                </div>
+                <div>
+                  <label className={labelClass}>Precio base ($)</label>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    value={nuevoServicio.precioBase || ""}
+                    onChange={(e) => setNuevoServicio((p) => ({ ...p, precioBase: parseInt(e.target.value.replace(/\D/g, "")) || 0 }))}
+                    className={inputClass}
+                    placeholder="0"
+                  />
+                </div>
+                <div>
+                  <label className={labelClass}>
+                    <input
+                      type="checkbox"
+                      checked={tienePrecioPorLitro}
+                      onChange={(e) => setTienePrecioPorLitro(e.target.checked)}
+                      className="mr-2 accent-red-600"
+                    />
+                    Precio por litro de aceite ($)
+                  </label>
+                  {tienePrecioPorLitro && (
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      value={nuevoServicio.precioPorLitro || ""}
+                      onChange={(e) => setNuevoServicio((p) => ({ ...p, precioPorLitro: parseInt(e.target.value.replace(/\D/g, "")) || 0 }))}
+                      className={inputClass}
+                      placeholder="0"
+                    />
+                  )}
+                </div>
+              </div>
+
+              {/* Items que incluye */}
+              <div className="mb-5">
+                <label className={labelClass}>¿Qué incluye?</label>
+                <div className="space-y-2 mb-2">
+                  {nuevoServicio.incluye.map((item, idx) => (
+                    <div key={idx} className="flex items-center gap-2 bg-neutral-800 border border-neutral-700 px-3 py-2">
+                      <CheckCircle size={13} className="text-red-500 shrink-0" />
+                      <span className="text-sm text-neutral-300 flex-1">{item}</span>
+                      <button onClick={() => quitarItem(idx)} className="text-neutral-600 hover:text-red-500 transition-colors">
+                        <X size={14} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={nuevoItem}
+                    onChange={(e) => setNuevoItem(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), agregarItem())}
+                    className={`${inputClass} flex-1`}
+                    placeholder="Ej: Cambio de filtro de aceite"
+                  />
+                  <button
+                    type="button"
+                    onClick={agregarItem}
+                    className="bg-neutral-700 hover:bg-neutral-600 text-white px-4 py-2 text-xs font-black uppercase tracking-widest transition-colors"
+                  >
+                    <Plus size={14} />
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-3">
+                <button
+                  onClick={() => setMostrarForm(false)}
+                  className="text-neutral-500 hover:text-white font-black text-xs uppercase tracking-widest px-4 py-2 transition-colors"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={agregarServicio}
+                  className="flex items-center gap-2 bg-neutral-700 hover:bg-neutral-600 text-white font-black uppercase tracking-widest text-xs px-6 py-3 transition-colors"
+                >
+                  <Plus size={13} />
+                  Agregar a la lista
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
         {/* Botón guardar */}
-        <div className="mt-10 flex justify-end">
+        <div className="mt-8 flex justify-end">
           <button
             onClick={guardar}
             disabled={guardando}
             className="flex items-center gap-2 bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white font-black uppercase tracking-widest text-xs px-8 py-4 transition-colors"
           >
             <Save size={14} />
-            {guardando ? "Guardando..." : "Guardar cambios"}
+            {guardando ? "Guardando..." : "Guardar todos los cambios"}
           </button>
         </div>
       </main>

@@ -1,8 +1,10 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import TurnosClient from "./TurnosClient";
+import { getServiciosStore } from "@/lib/servicios-store";
 
-export default function TurnosPage() {
+export default async function TurnosPage() {
+  const servicios = await getServiciosStore();
   return (
     <>
       <Header />
@@ -36,7 +38,7 @@ export default function TurnosPage() {
             </p>
           </div>
         </div>
-        <TurnosClient />
+        <TurnosClient servicios={servicios} />
       </main>
       <Footer />
     </>

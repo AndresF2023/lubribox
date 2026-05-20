@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 import { autos } from "@/data/autos";
-import { servicios } from "@/data/servicios";
+import { Servicio } from "@/data/servicios";
 import { getProximosDias, getHorariosDisponibles, formatearFecha } from "@/data/disponibilidad";
 import { CheckCircle, ChevronDown, Calendar, Clock } from "lucide-react";
 
@@ -16,7 +16,7 @@ const inputClass =
 const selectClass =
   "w-full appearance-none bg-neutral-800 border border-neutral-600 text-white rounded-none px-4 py-3 pr-10 text-sm focus:outline-none focus:border-red-500 disabled:opacity-40 disabled:cursor-not-allowed";
 
-function TurnosForm() {
+function TurnosForm({ servicios }: { servicios: Servicio[] }) {
   const params = useSearchParams();
 
   const [paso, setPaso] = useState<Paso>(1);
@@ -357,10 +357,10 @@ function TurnosForm() {
   );
 }
 
-export default function TurnosClient() {
+export default function TurnosClient({ servicios }: { servicios: Servicio[] }) {
   return (
     <Suspense fallback={<div className="py-20 text-center text-neutral-500 uppercase tracking-widest text-xs">Cargando...</div>}>
-      <TurnosForm />
+      <TurnosForm servicios={servicios} />
     </Suspense>
   );
 }

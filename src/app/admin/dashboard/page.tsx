@@ -1,14 +1,13 @@
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/session";
-import { getPrecios } from "@/lib/precios";
-import { servicios } from "@/data/servicios";
+import { getServiciosStore } from "@/lib/servicios-store";
 import DashboardClient from "./DashboardClient";
 
 export default async function DashboardPage() {
   const session = await getSession();
   if (!session.isAdmin) redirect("/admin");
 
-  const precios = await getPrecios();
+  const servicios = await getServiciosStore();
 
-  return <DashboardClient servicios={servicios} preciosIniciales={precios} />;
+  return <DashboardClient serviciosIniciales={servicios} />;
 }

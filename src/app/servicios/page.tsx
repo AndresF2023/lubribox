@@ -1,10 +1,10 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ServiciosClient from "./ServiciosClient";
-import { getPrecios } from "@/lib/precios";
+import { getServiciosStore } from "@/lib/servicios-store";
 
 export default async function ServiciosPage() {
-  const precios = await getPrecios();
+  const servicios = await getServiciosStore();
   return (
     <>
       <Header />
@@ -38,7 +38,7 @@ export default async function ServiciosPage() {
             </p>
           </div>
         </div>
-        <ServiciosClient preciosMap={precios} />
+        <ServiciosClient servicios={servicios} />
       </main>
       <Footer />
     </>
