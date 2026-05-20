@@ -6,9 +6,86 @@ import { Suspense } from "react";
 import { autos } from "@/data/autos";
 import { Servicio } from "@/data/servicios";
 import { getProximosDias, getHorariosDisponibles, formatearFecha } from "@/data/disponibilidad";
-import { CheckCircle, ChevronDown, Calendar, Clock, Car, Truck } from "lucide-react";
+import { CheckCircle, ChevronDown, Calendar, Clock, Car, Truck, MessageCircle, CalendarPlus } from "lucide-react";
 
 type Paso = 1 | 2 | 3 | 4;
+
+const WHATSAPP_NUMERO = "5493512052196"; // +54 9 351 205-2196
+const UBICACION = "Emilio Petorutti 2576, Córdoba";
+
+function fmtCalendar(date: Date): string {
+  const p = (n: number) => String(n).padStart(2, "0");
+  return (
+    date.getFullYear() +
+    p(date.getMonth() + 1) +
+    p(date.getDate()) +
+    "T" +
+    p(date.getHours()) +
+    p(date.getMinutes()) +
+    "00"
+  );
+}
+
+function buildCalendarUrl(
+  fecha: Date,
+  hora: string,
+  servicio: string,
+  vehiculo: string,
+  clienteNombre: string,
+  detalles: string
+): string {
+  const [h, m] = hora.split(":").map(Number);
+  const start = new Date(fecha);
+  start.setHours(h, m, 0, 0);
+  const end = new Date(start);
+  end.setHours(h + 1, m, 0, 0);
+
+  const params = new URLSearchParams({
+    action: "TEMPLATE",
+    text: `${servicio} — ${clienteNombre} (${vehiculo})`,
+    dates: `${fmtCalendar(start)}/${fmtCalendar(end)}`,
+    details: detalles,
+    location: UBICACION,
+  });
+  return `https://calendar.google.com/calendar/render?${params.toString()}`;
+}
+
+function buildWhatsAppUrl(
+  fecha: Date,
+  hora: string,
+  servicio: string,
+  vehiculo: string,
+  tipoVehiculo: string,
+  clienteNombre: string,
+  clienteTelefono: string,
+  clienteEmail: string,
+  clienteComentario: string,
+  calendarUrl: string
+): string {
+  const fechaStr = fecha.toLocaleDateString("es-AR", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+  });
+
+  const lines = [
+    `🔧 *NUEVA SOLICITUD DE TURNO — LubriBox*`,
+    ``,
+    `👤 *Cliente:* ${clienteNombre}`,
+    `📞 *Teléfono:* ${clienteTelefono}`,
+    `📧 *Email:* ${clienteEmail}`,
+    `🚗 *Vehículo:* ${vehiculo} (${tipoVehiculo})`,
+    `🔧 *Servicio:* ${servicio}`,
+    `📅 *Día:* ${fechaStr}`,
+    `⏰ *Horario:* ${hora} hs`,
+    clienteComentario ? `💬 *Comentarios:* ${clienteComentario}` : "",
+    ``,
+    `📆 Agregar al calendario:`,
+    calendarUrl,
+  ].filter((l) => l !== undefined);
+
+  return `https://wa.me/${WHATSAPP_NUMERO}?text=${encodeURIComponent(lines.join("\n"))}`;
+}
 
 const inputClass =
   "w-full bg-neutral-800 border border-neutral-600 text-white rounded-none px-4 py-3 text-sm focus:outline-none focus:border-red-500 placeholder:text-neutral-500";
@@ -32,6 +109,7 @@ function TurnosForm({ servicios }: { servicios: Servicio[] }) {
   const [email, setEmail] = useState("");
   const [comentario, setComentario] = useState("");
   const [enviado, setEnviado] = useState(false);
+  const [whatsappUrl, setWhatsappUrl] = useState("");
 
   const dias = getProximosDias(7);
   const horariosDisponibles = diaIndex !== null ? getHorariosDisponibles(dias[diaIndex]) : [];
@@ -63,26 +141,59 @@ function TurnosForm({ servicios }: { servicios: Servicio[] }) {
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    const vehiculo = `${marca} ${modeloNombre} ${año}`;
+    const calendarDetalles = [
+      `Cliente: ${nombre}`,
+      `Tel: ${telefono}`,
+      `Email: ${email}`,
+      comentario ? `Comentarios: ${comentario}` : "",
+    ].filter(Boolean).join("\n");
+
+    const calUrl = buildCalendarUrl(
+      dias[diaIndex!],
+      horario,
+      servicioData?.nombre ?? "",
+      vehiculo,
+      nombre,
+      calendarDetalles
+    );
+    const waUrl = buildWhatsAppUrl(
+      dias[diaIndex!],
+      horario,
+      servicioData?.nombre ?? "",
+      vehiculo,
+      tipoVehiculo,
+      nombre,
+      telefono,
+      email,
+      comentario,
+      calUrl
+    );
+    setWhatsappUrl(waUrl);
     setEnviado(true);
+    window.open(waUrl, "_blank");
   }
 
   /* ─── CONFIRMACIÓN ─── */
   if (enviado) {
     return (
-      <div className="max-w-xl mx-auto px-4 py-20 text-center animate-fadeIn">
+      <div className="max-w-xl mx-auto px-4 py-16 text-center animate-fadeIn">
         <div className="inline-flex items-center justify-center w-20 h-20 bg-green-900/40 border border-green-700 mb-6">
           <CheckCircle size={36} className="text-green-400" />
         </div>
-        <h2 className="text-3xl font-black text-white uppercase tracking-tight mb-3">¡Turno solicitado!</h2>
-        <p className="text-neutral-400 mb-2">
-          Recibimos tu solicitud. Te vamos a confirmar el turno por WhatsApp o email en las próximas horas.
+        <h2 className="text-3xl font-black text-white uppercase tracking-tight mb-3">¡Listo!</h2>
+        <p className="text-neutral-400 mb-6">
+          Tu solicitud fue enviada por WhatsApp al lubricentro. Te van a confirmar el turno a la brevedad.
         </p>
-        <div className="bg-neutral-800 border border-neutral-700 p-5 my-6 text-left space-y-3 text-sm">
+
+        {/* Resumen */}
+        <div className="bg-neutral-800 border border-neutral-700 p-5 mb-6 text-left space-y-3 text-sm">
           {[
             { label: "Servicio", value: servicioData?.nombre },
-            { label: "Vehículo", value: `${marca} ${modeloNombre} ${año}` },
+            { label: "Vehículo", value: `${marca} ${modeloNombre} ${año} (${tipoVehiculo})` },
             { label: "Día", value: diaIndex !== null ? formatearFecha(dias[diaIndex]) : "" },
             { label: "Horario", value: `${horario} hs` },
+            { label: "Cliente", value: nombre },
           ].map(({ label, value }) => (
             <div key={label} className="flex justify-between border-b border-neutral-700 pb-2 last:border-0 last:pb-0">
               <span className="text-neutral-500 uppercase text-xs tracking-widest">{label}:</span>
@@ -90,8 +201,25 @@ function TurnosForm({ servicios }: { servicios: Servicio[] }) {
             </div>
           ))}
         </div>
-        <p className="text-xs text-neutral-600">
-          Ante cualquier consulta: +54 351 205-2196
+
+        {/* Botones */}
+        <div className="space-y-3">
+          <a
+            href={whatsappUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-center gap-2 w-full bg-green-600 hover:bg-green-700 text-white font-black px-6 py-4 uppercase tracking-widest text-xs transition-colors"
+          >
+            <MessageCircle size={16} />
+            Reenviar por WhatsApp
+          </a>
+        </div>
+
+        <p className="text-xs text-neutral-600 mt-6">
+          El mensaje incluye un link para que el lubricentro pueda agregar el turno a Google Calendar.
+        </p>
+        <p className="text-xs text-neutral-600 mt-2">
+          Consultas: +54 351 205-2196
         </p>
       </div>
     );
