@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { getSession } from "@/lib/session";
 import { saveServiciosStore } from "@/lib/servicios-store";
 import { Servicio } from "@/data/servicios";
@@ -14,6 +15,8 @@ export async function PUT(req: NextRequest) {
     }
     const data: Servicio[] = await req.json();
     await saveServiciosStore(data);
+    revalidatePath("/servicios");
+    revalidatePath("/turnos");
     return NextResponse.json({ ok: true });
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : String(err);
