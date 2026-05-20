@@ -366,6 +366,7 @@ export default function DashboardClient({ serviciosIniciales }: Props) {
                     placeholder="Dejar vacío = igual a auto"
                   />
                 </div>
+                {nuevoServicio.categoria !== "paquetes" && (
                 <div>
                   <label className={labelClass}>
                     <input
@@ -395,6 +396,7 @@ export default function DashboardClient({ serviciosIniciales }: Props) {
                     </div>
                   )}
                 </div>
+                )}
               </div>
 
               {/* Items que incluye */}
