@@ -1,4 +1,5 @@
 import { MapPin, Phone, Clock } from "lucide-react";
+import Image from "next/image";
 
 export default function Footer() {
   return (
@@ -6,9 +7,8 @@ export default function Footer() {
       <div className="max-w-6xl mx-auto px-4 py-12 grid grid-cols-1 md:grid-cols-3 gap-8">
         {/* Logo / descripción */}
         <div>
-          <div className="flex items-center gap-0 font-black text-xl mb-4">
-            <span className="bg-red-600 text-white px-2.5 py-1 font-black text-base uppercase tracking-widest">LUBRI</span>
-            <span className="bg-neutral-800 text-white px-2.5 py-1 font-black text-base uppercase tracking-widest border-y border-r border-neutral-700">BOX</span>
+          <div className="mb-4">
+            <Image src="/logo.png" alt="LubriBox Car Service" width={140} height={24} className="h-8 w-auto" />
           </div>
           <p className="text-neutral-500 text-sm leading-relaxed">
             Tu lubricentro de confianza. Servicio profesional, precios claros y atención personalizada en autos nacionales.

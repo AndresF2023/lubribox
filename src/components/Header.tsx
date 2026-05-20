@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
@@ -20,10 +21,8 @@ export default function Header() {
     <header className="bg-neutral-950 text-white sticky top-0 z-50 border-b-2 border-red-600">
       <div className="max-w-6xl mx-auto px-4 flex items-center justify-between h-16">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-0 font-black text-xl tracking-tight">
-          <span className="bg-red-600 text-white px-2.5 py-1 font-black text-lg uppercase tracking-widest">LUBRI</span>
-          <span className="bg-neutral-800 text-white px-2.5 py-1 font-black text-lg uppercase tracking-widest border-y border-r border-neutral-700">BOX</span>
-          <span className="text-neutral-500 text-xs font-semibold uppercase tracking-widest ml-2 hidden sm:block">Car Service</span>
+        <Link href="/" className="flex items-center">
+          <Image src="/logo.png" alt="LubriBox Car Service" width={160} height={27} priority className="h-9 w-auto" />
         </Link>
 
         {/* Desktop nav */}
