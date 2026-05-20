@@ -7,6 +7,7 @@ import { Menu, X } from "lucide-react";
 
 const nav = [
   { href: "/", label: "Inicio" },
+  { href: "/quienes-somos", label: "Quiénes Somos" },
   { href: "/servicios", label: "Servicios y Precios" },
   { href: "/turnos", label: "Sacar Turno" },
 ];
