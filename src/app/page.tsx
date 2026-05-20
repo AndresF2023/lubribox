@@ -85,8 +85,8 @@ export default function Home() {
                 Car Service Profesional
               </span>
               <h1 className="text-5xl md:text-7xl font-black leading-none mb-3 uppercase tracking-tight">
-                El service<br />
-                <span className="text-red-500">sin sorpresas</span>
+                Si cuidás tu auto,<br />
+                <span className="text-red-500">tu auto te cuida a vos</span>
               </h1>
               <div className="w-16 h-1 bg-red-600 mb-6" />
               <p className="text-neutral-400 text-lg md:text-xl mb-10 leading-relaxed max-w-xl">
