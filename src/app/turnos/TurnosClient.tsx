@@ -98,7 +98,7 @@ const btnContinuarClass =
   "bg-red-600 hover:bg-red-700 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-red-600 text-white font-black px-8 py-3 uppercase tracking-widest text-xs transition-colors";
 
 function telefonoValido(tel: string): boolean {
-  return tel.trim().replace(/\D/g, "").length >= 8;
+  return tel.trim().replace(/\D/g, "").length >= 6;
 }
 
 function TurnosForm({ servicios }: { servicios: Servicio[] }) {
@@ -511,7 +511,7 @@ function TurnosForm({ servicios }: { servicios: Servicio[] }) {
                     className={inputClass}
                   />
                   {telefono && !telefonoValido(telefono) && (
-                    <p className="text-xs text-red-400 mt-1">Ingresá al menos 8 dígitos</p>
+                    <p className="text-xs text-red-400 mt-1">Ingresá al menos 6 dígitos</p>
                   )}
                 </div>
                 <div>
