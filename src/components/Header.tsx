@@ -31,7 +31,7 @@ export default function Header() {
             <Link
               key={href}
               href={href}
-              className={`px-4 py-2 text-sm font-bold uppercase tracking-wide transition-colors ${
+              className={`px-4 py-2 text-sm font-black uppercase tracking-wide transition-colors ${
                 pathname === href
                   ? "bg-red-600 text-white"
                   : "text-neutral-400 hover:text-white hover:bg-neutral-800"
@@ -60,7 +60,7 @@ export default function Header() {
               key={href}
               href={href}
               onClick={() => setOpen(false)}
-              className={`block px-4 py-3 text-sm font-bold uppercase tracking-wide my-1 transition-colors ${
+              className={`block px-4 py-3 text-sm font-black uppercase tracking-wide my-1 transition-colors ${
                 pathname === href
                   ? "bg-red-600 text-white"
                   : "text-neutral-400 hover:text-white hover:bg-neutral-800"
