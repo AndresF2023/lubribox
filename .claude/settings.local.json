@@ -36,7 +36,8 @@
       "WebFetch(domain:www.c3carecarcenter.com)",
       "WebFetch(domain:cararac.com)",
       "Bash(python3:*)",
-      "Bash(ls -la /d/ProyectosProgr/lubribox/tailwind*)"
+      "Bash(ls -la /d/ProyectosProgr/lubribox/tailwind*)",
+      "Bash(xargs grep:*)"
     ]
   }
 }
