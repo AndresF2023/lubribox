@@ -32,7 +32,7 @@ const serviciosDestacados = [
   { nombre: "Service Premium Gold", desde: 45000 },
   { nombre: "Kit de Distribución", desde: 55000 },
   { nombre: "Cambio de Pastillas de Freno", desde: 18000 },
-  { nombre: "IPV — Inspección Preventiva Vehicular", desde: 9000 },
+  { nombre: "IPV — Inspección Preventiva Vehicular", desde: 40000 },
 ];
 
 const testimonios = [
