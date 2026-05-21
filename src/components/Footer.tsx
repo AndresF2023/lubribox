@@ -11,7 +11,7 @@ export default function Footer() {
             <Image src="/logo.png" alt="LubriBox Car Service" width={160} height={41} className="h-10 w-auto" />
           </div>
           <p className="text-neutral-500 text-sm leading-relaxed">
-            Tu lubricentro de confianza. Servicio profesional, precios claros y atención personalizada en autos nacionales.
+            Tu lubricentro de confianza. Servicio profesional, precios claros y atención personalizada para todo tipo de vehículos.
           </p>
         </div>
 
