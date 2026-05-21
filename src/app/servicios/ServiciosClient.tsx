@@ -163,6 +163,9 @@ export default function ServiciosClient({ servicios }: { servicios: Servicio[] }
             Seleccioná tu auto para ver el precio exacto. Sin selección se muestran los precios base.
           </div>
         )}
+        <p className="mt-2 text-xs text-gray-400">
+          Precios estimados, el valor puede cambiar de acuerdo a cada vehículo.
+        </p>
       </div>
 
       {/* Filtro por categoría */}
