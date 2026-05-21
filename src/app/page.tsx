@@ -2,6 +2,8 @@ import Link from "next/link";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { CheckCircle, Clock, DollarSign, Wrench, Star, ChevronRight, Shield, Zap } from "lucide-react";
+import { getServiciosStore } from "@/lib/servicios-store";
+import { calcularPrecio } from "@/data/servicios";
 
 const ventajas = [
   {
@@ -26,13 +28,14 @@ const ventajas = [
   },
 ];
 
-const serviciosDestacados = [
-  { nombre: "Service Básico", desde: 15000 },
-  { nombre: "Service Full", desde: 28000 },
-  { nombre: "Service Premium Gold", desde: 45000 },
-  { nombre: "Kit de Distribución", desde: 55000 },
-  { nombre: "Cambio de Pastillas de Freno", desde: 18000 },
-  { nombre: "IPV — Inspección Preventiva Vehicular", desde: 40000 },
+// IDs de los servicios que aparecen en la sección "más solicitados".
+// El último elemento busca por nombre (IPV puede tener ID variable si fue creado desde el admin).
+const FEATURED_IDS = [
+  "service-basico",
+  "service-full",
+  "service-premium-gold",
+  "kit-distribucion",
+  "pastillas-freno",
 ];
 
 const testimonios = [
@@ -47,7 +50,15 @@ function formatPrecio(n: number) {
   return new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 }).format(n);
 }
 
-export default function Home() {
+export default async function Home() {
+  const todosServicios = await getServiciosStore();
+
+  const serviciosDestacados = [
+    ...FEATURED_IDS.map((id) => todosServicios.find((s) => s.id === id)),
+    todosServicios.find((s) => s.nombre.toLowerCase().includes("ipv")),
+  ]
+    .filter(Boolean)
+    .map((s) => ({ nombre: s!.nombre, desde: calcularPrecio(s!) }));
   return (
     <>
       <Header />

@@ -20,6 +20,7 @@ export async function PUT(req: NextRequest) {
     }
     const data: Body = await req.json();
     await saveFullStore({ servicios: data.servicios, categorias: data.categorias });
+    revalidatePath("/");
     revalidatePath("/servicios");
     revalidatePath("/turnos");
     return NextResponse.json({ ok: true });
