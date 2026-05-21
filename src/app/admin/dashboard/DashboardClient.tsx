@@ -269,6 +269,11 @@ export default function DashboardClient({ serviciosIniciales, categoriasIniciale
                       <div className="flex-1 min-w-0">
                         <p className="font-black text-white text-sm uppercase tracking-wide mb-1">{s.nombre}</p>
                         <p className="text-neutral-500 text-xs leading-relaxed">{s.descripcion}</p>
+                        {s.precioPorLitro !== undefined && (
+                          <p className="text-xs text-neutral-500 mt-2">
+                            Total = base + litros × $/L
+                          </p>
+                        )}
                       </div>
                       <div className="flex flex-wrap items-start gap-4 sm:gap-6 w-full sm:w-auto mt-3 sm:mt-0">
                         {/* Columna Auto */}
@@ -345,6 +350,30 @@ export default function DashboardClient({ serviciosIniciales, categoriasIniciale
                         </div>
                       </div>
                     </div>
+                    {s.precioPorLitro !== undefined && (
+                      <div className="mt-4 pt-4 border-t border-neutral-800 flex flex-wrap gap-x-6 gap-y-1 text-xs text-neutral-500">
+                        <span className="font-black text-neutral-400 uppercase tracking-widest w-full sm:w-auto">
+                          Total estimado (ej. 4 litros):
+                        </span>
+                        <span>
+                          Auto:{" "}
+                          <strong className="text-white">
+                            {formatearPrecio(s.precioBase + 4 * s.precioPorLitro)}
+                          </strong>
+                        </span>
+                        {(s.precioBaseCamioneta != null || s.precioPorLitroCamioneta != null) && (
+                          <span>
+                            Camioneta:{" "}
+                            <strong className="text-white">
+                              {formatearPrecio(
+                                (s.precioBaseCamioneta ?? s.precioBase) +
+                                4 * (s.precioPorLitroCamioneta ?? s.precioPorLitro)
+                              )}
+                            </strong>
+                          </span>
+                        )}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -440,7 +469,6 @@ export default function DashboardClient({ serviciosIniciales, categoriasIniciale
                     placeholder="Dejar vacío = igual a auto"
                   />
                 </div>
-                {nuevoServicio.categoria !== "paquetes" && (
                 <div>
                   <label className={labelClass}>
                     <input
@@ -470,7 +498,6 @@ export default function DashboardClient({ serviciosIniciales, categoriasIniciale
                     </div>
                   )}
                 </div>
-                )}
               </div>
 
               {/* Items que incluye */}

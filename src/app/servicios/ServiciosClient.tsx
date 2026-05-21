@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { autos } from "@/data/autos";
-import { Servicio, Categoria, TipoVehiculo, calcularPrecio, formatearPrecio, getPrecioPorLitro } from "@/data/servicios";
+import { Servicio, Categoria, TipoVehiculo, calcularPrecio, formatearPrecio, getPrecioPorLitro, getPrecioBase } from "@/data/servicios";
 import { Clock, CheckCircle, ChevronDown, Zap, Truck, Car } from "lucide-react";
 
 const selectClass =
@@ -213,10 +213,16 @@ export default function ServiciosClient({ servicios, categorias }: { servicios: 
                 </div>
                 <div className="text-right shrink-0">
                   <div className="text-xl sm:text-2xl font-black text-red-500">{formatearPrecio(precio)}</div>
-                  {autoSeleccionado && precioPorLitroActual && (
-                    <div className="text-xs text-neutral-500 hidden sm:block">
-                      base + {modeloData?.litrosAceite}L × {formatearPrecio(precioPorLitroActual)}
-                    </div>
+                  {precioPorLitroActual && (
+                    autoSeleccionado && modeloData ? (
+                      <div className="text-xs text-neutral-400 mt-0.5">
+                        {formatearPrecio(getPrecioBase(s, tipoVehiculo))} + {modeloData.litrosAceite}L × {formatearPrecio(precioPorLitroActual)}/L
+                      </div>
+                    ) : (
+                      <div className="text-xs text-neutral-500 mt-0.5">
+                        base + litros × {formatearPrecio(precioPorLitroActual)}/L
+                      </div>
+                    )
                   )}
                   <div className="flex items-center justify-end gap-1 text-xs text-neutral-500 mt-1">
                     <Clock size={11} />

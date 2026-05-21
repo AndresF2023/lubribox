@@ -44,9 +44,10 @@ export const servicios: Servicio[] = [
     nombre: "Service Básico",
     descripcion: "Paquete esencial de mantenimiento para mantener tu auto en óptimas condiciones.",
     duracionMin: 45,
-    precioBase: 15000,
+    precioBase: 8000,
+    precioPorLitro: 1800,
     incluye: [
-      "Cambio de aceite",
+      "Cambio de aceite mineral",
       "Cambio de filtro de aire",
       "Cambio de filtro de aceite",
     ],
@@ -57,9 +58,10 @@ export const servicios: Servicio[] = [
     nombre: "Service Full",
     descripcion: "Servicio completo de mantenimiento con lavado incluido. La opción más popular.",
     duracionMin: 90,
-    precioBase: 28000,
+    precioBase: 16000,
+    precioPorLitro: 2800,
     incluye: [
-      "Cambio de aceite",
+      "Cambio de aceite semisintético",
       "Cambio de filtro de aire",
       "Cambio de filtro de aceite",
       "Cambio de filtro de combustible",
@@ -74,9 +76,10 @@ export const servicios: Servicio[] = [
     nombre: "Service Premium Gold",
     descripcion: "El servicio más completo. Chequeo computarizado, alineado, balanceo y lavado. Máxima protección para tu vehículo.",
     duracionMin: 150,
-    precioBase: 45000,
+    precioBase: 26000,
+    precioPorLitro: 4200,
     incluye: [
-      "Cambio de aceite",
+      "Cambio de aceite sintético",
       "Cambio de filtro de aire",
       "Cambio de filtro de aceite",
       "Cambio de filtro de combustible",
@@ -184,7 +187,6 @@ export const servicios: Servicio[] = [
 
 export function calcularPrecio(servicio: Servicio, litrosAceite?: number, tipo: TipoVehiculo = "auto"): number {
   const base = getPrecioBase(servicio, tipo);
-  if (servicio.categoria === "paquetes") return base;
   const porLitro = getPrecioPorLitro(servicio, tipo);
   if (porLitro && litrosAceite) {
     return base + litrosAceite * porLitro;
