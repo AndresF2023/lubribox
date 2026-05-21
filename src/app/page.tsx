@@ -27,12 +27,12 @@ const ventajas = [
 ];
 
 const serviciosDestacados = [
-  { nombre: "Cambio de Aceite Mineral", desde: 14900 },
-  { nombre: "Cambio de Aceite Semisintético", desde: 19600 },
-  { nombre: "Cambio de Aceite Sintético", desde: 26700 },
+  { nombre: "Service Básico", desde: 15000 },
+  { nombre: "Service Full", desde: 28000 },
+  { nombre: "Service Premium Gold", desde: 45000 },
+  { nombre: "Kit de Distribución", desde: 55000 },
   { nombre: "Cambio de Pastillas de Freno", desde: 18000 },
-  { nombre: "Alineación y Balanceo", desde: 16000 },
-  { nombre: "Filtros de Aire y Combustible", desde: 4500 },
+  { nombre: "IPV — Inspección Preventiva Vehicular", desde: 9000 },
 ];
 
 const testimonios = [
