@@ -82,7 +82,7 @@ function buildWhatsAppUrl(
     ``,
     `Agregar al calendario:`,
     calendarUrl,
-  ].filter((l) => l !== undefined);
+  ].filter(Boolean);
 
   return `https://wa.me/${WHATSAPP_NUMERO}?text=${encodeURIComponent(lines.join("\n"))}`;
 }

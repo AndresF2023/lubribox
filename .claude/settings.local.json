@@ -1,7 +1,42 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npx create-next-app@latest:*)"
+      "Bash(npx create-next-app@latest:*)",
+      "Bash(npm install:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npm run:*)",
+      "Bash(npx next:*)",
+      "Bash(start:*)",
+      "Bash(vercel:*)",
+      "Bash(git:*)",
+      "Bash(xargs ls:*)",
+      "Bash(gh auth:*)",
+      "Bash(gh repo:*)",
+      "WebFetch(domain:i.gyazo.com)",
+      "Bash(magick --version)",
+      "Bash(convert --version)",
+      "Bash(inkscape --version)",
+      "Bash(python -c \"import fitz; print\\('ok'\\)\")",
+      "Bash(pip install:*)",
+      "Bash(pip3 install:*)",
+      "Bash(python -m pip install pymupdf --quiet)",
+      "Bash(python:*)",
+      "Bash(node -e \"const {put} = require\\('@vercel/blob'\\); console.log\\(put.toString\\(\\).slice\\(0,200\\)\\)\")",
+      "Bash(node -e ':*)",
+      "WebFetch(domain:www.motordata.com.ar)",
+      "WebSearch",
+      "WebFetch(domain:carerac.com)",
+      "WebFetch(domain:www.opinautos.com)",
+      "WebFetch(domain:www.tallerespinera.es)",
+      "WebFetch(domain:www.hyundai.com.ar)",
+      "WebFetch(domain:servicios.fiat.com.ar)",
+      "WebFetch(domain:sensorautomotriz.com)",
+      "WebFetch(domain:ypfelcruce.com.ar)",
+      "WebFetch(domain:ypfelcruce.com)",
+      "WebFetch(domain:www.c3carecarcenter.com)",
+      "WebFetch(domain:cararac.com)",
+      "Bash(python3:*)",
+      "Bash(ls -la /d/ProyectosProgr/lubribox/tailwind*)"
     ]
   }
 }

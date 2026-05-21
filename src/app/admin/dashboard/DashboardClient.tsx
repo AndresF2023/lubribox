@@ -233,7 +233,7 @@ export default function DashboardClient({ serviciosIniciales, categoriasIniciale
                 <p className="text-neutral-600 text-xs italic">Sin categorías. Agregá al menos una.</p>
               )}
             </div>
-            <div className="flex gap-2">
+            <div className="flex flex-col sm:flex-row gap-2">
               <input
                 type="text"
                 value={nuevaCategoriaNombre}
@@ -245,7 +245,7 @@ export default function DashboardClient({ serviciosIniciales, categoriasIniciale
               <button
                 type="button"
                 onClick={agregarCategoria}
-                className="flex items-center gap-2 bg-neutral-700 hover:bg-neutral-600 text-white px-4 py-2 text-xs font-black uppercase tracking-widest transition-colors whitespace-nowrap"
+                className="flex items-center justify-center gap-2 bg-neutral-700 hover:bg-neutral-600 text-white px-4 py-2 text-xs font-black uppercase tracking-widest transition-colors whitespace-nowrap"
               >
                 <Plus size={13} />
                 Agregar
@@ -265,15 +265,15 @@ export default function DashboardClient({ serviciosIniciales, categoriasIniciale
               <div className="space-y-3">
                 {items.map((s) => (
                   <div key={s.id} className="bg-neutral-900 border border-neutral-700 p-5">
-                    <div className="flex flex-wrap items-start justify-between gap-4">
+                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
                       <div className="flex-1 min-w-0">
                         <p className="font-black text-white text-sm uppercase tracking-wide mb-1">{s.nombre}</p>
                         <p className="text-neutral-500 text-xs leading-relaxed">{s.descripcion}</p>
                       </div>
-                      <div className="flex flex-wrap items-start gap-6 shrink-0">
+                      <div className="flex flex-wrap items-start gap-4 sm:gap-6 w-full sm:w-auto mt-3 sm:mt-0">
                         {/* Columna Auto */}
                         <div className="space-y-3">
-                          <p className="text-xs font-black text-neutral-500 uppercase tracking-widest flex items-center gap-1">Auto</p>
+                          <p className="text-xs font-black text-neutral-400 uppercase tracking-widest">Auto</p>
                           <div>
                             <label className={labelClass}>Precio base</label>
                             <div className="flex items-center gap-1">
@@ -303,17 +303,17 @@ export default function DashboardClient({ serviciosIniciales, categoriasIniciale
                         </div>
                         {/* Columna Camioneta */}
                         <div className="space-y-3">
-                          <p className="text-xs font-black text-red-600 uppercase tracking-widest">Camioneta</p>
+                          <p className="text-xs font-black text-red-500 uppercase tracking-widest">Camioneta</p>
                           <div>
                             <label className={labelClass}>Precio base</label>
                             <div className="flex items-center gap-1">
                               <span className="text-neutral-500 text-sm">$</span>
                               <input
                                 type="text" inputMode="numeric"
-                                value={(s.precioBaseCamioneta ?? "").toLocaleString?.() ?? ""}
+                                value={s.precioBaseCamioneta != null ? s.precioBaseCamioneta.toLocaleString("es-AR") : ""}
                                 placeholder={s.precioBase.toLocaleString("es-AR")}
                                 onChange={(e) => handleCampo(s.id, "precioBaseCamioneta", e.target.value)}
-                                className="w-28 bg-neutral-800 border border-red-900/50 text-white px-3 py-2 text-sm font-black text-right focus:outline-none focus:border-red-500 rounded-none placeholder:text-neutral-600"
+                                className="w-28 bg-neutral-800 border border-neutral-600 text-white px-3 py-2 text-sm font-black text-right focus:outline-none focus:border-red-500 rounded-none placeholder:text-neutral-600"
                               />
                             </div>
                           </div>
@@ -324,10 +324,10 @@ export default function DashboardClient({ serviciosIniciales, categoriasIniciale
                                 <span className="text-neutral-500 text-sm">$</span>
                                 <input
                                   type="text" inputMode="numeric"
-                                  value={(s.precioPorLitroCamioneta ?? "").toLocaleString?.() ?? ""}
+                                  value={s.precioPorLitroCamioneta != null ? s.precioPorLitroCamioneta.toLocaleString("es-AR") : ""}
                                   placeholder={(s.precioPorLitro ?? 0).toLocaleString("es-AR")}
                                   onChange={(e) => handleCampo(s.id, "precioPorLitroCamioneta", e.target.value)}
-                                  className="w-28 bg-neutral-800 border border-red-900/50 text-white px-3 py-2 text-sm font-black text-right focus:outline-none focus:border-red-500 rounded-none placeholder:text-neutral-600"
+                                  className="w-28 bg-neutral-800 border border-neutral-600 text-white px-3 py-2 text-sm font-black text-right focus:outline-none focus:border-red-500 rounded-none placeholder:text-neutral-600"
                                 />
                               </div>
                             </div>

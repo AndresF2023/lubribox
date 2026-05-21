@@ -14,6 +14,8 @@ export default function ServiciosClient({ servicios, categorias }: { servicios: 
   const [modeloNombre, setModeloNombre] = useState("");
   const [año, setAño] = useState("");
   const [categoria, setCategoria] = useState<string>("todos");
+
+  const categoriasMap = Object.fromEntries(categorias.map((c) => [c.id, c.nombre]));
   const [expandido, setExpandido] = useState<string | null>(null);
   const [tipoVehiculo, setTipoVehiculo] = useState<TipoVehiculo>("auto");
 
@@ -198,21 +200,21 @@ export default function ServiciosClient({ servicios, categorias }: { servicios: 
             >
               <button
                 onClick={() => setExpandido(abierto ? null : s.id)}
-                className="w-full text-left px-6 py-5 flex items-center justify-between gap-4"
+                className="w-full text-left px-4 sm:px-6 py-4 sm:py-5 flex items-center justify-between gap-3"
               >
-                <div className="flex-1">
+                <div className="flex-1 min-w-0">
                   <div className="flex flex-wrap items-center gap-2 mb-1">
-                    <span className="font-black text-white text-base uppercase tracking-wide">{s.nombre}</span>
-                    <span className="text-xs bg-red-600/20 text-red-400 px-2 py-0.5 uppercase tracking-widest border border-red-900/50">
-                      {s.categoria}
+                    <span className="font-black text-white text-sm sm:text-base uppercase tracking-wide">{s.nombre}</span>
+                    <span className="text-xs bg-red-600/20 text-red-400 px-2 py-0.5 uppercase tracking-widest border border-red-900/50 whitespace-nowrap">
+                      {categoriasMap[s.categoria] ?? s.categoria}
                     </span>
                   </div>
-                  <p className="text-neutral-500 text-sm leading-relaxed">{s.descripcion}</p>
+                  <p className="text-neutral-500 text-sm leading-relaxed hidden sm:block">{s.descripcion}</p>
                 </div>
                 <div className="text-right shrink-0">
-                  <div className="text-2xl font-black text-red-500">{formatearPrecio(precio)}</div>
+                  <div className="text-xl sm:text-2xl font-black text-red-500">{formatearPrecio(precio)}</div>
                   {autoSeleccionado && precioPorLitroActual && (
-                    <div className="text-xs text-neutral-500">
+                    <div className="text-xs text-neutral-500 hidden sm:block">
                       base + {modeloData?.litrosAceite}L × {formatearPrecio(precioPorLitroActual)}
                     </div>
                   )}
@@ -230,8 +232,9 @@ export default function ServiciosClient({ servicios, categorias }: { servicios: 
               </button>
 
               {abierto && (
-                <div className="px-6 pb-6 pt-0 border-t border-neutral-800 animate-fadeIn">
-                  <h4 className="text-xs font-black text-neutral-400 uppercase tracking-[0.15em] mb-3 mt-4">¿Qué incluye?</h4>
+                <div className="px-4 sm:px-6 pb-6 pt-0 border-t border-neutral-800 animate-fadeIn">
+                  <p className="text-neutral-500 text-sm leading-relaxed mt-4 mb-3 sm:hidden">{s.descripcion}</p>
+                  <h4 className="text-xs font-black text-neutral-400 uppercase tracking-[0.15em] mb-3 mt-4 sm:mt-4">¿Qué incluye?</h4>
                   <ul className="space-y-2">
                     {s.incluye.map((item) => (
                       <li key={item} className="flex items-center gap-2 text-sm text-neutral-400">

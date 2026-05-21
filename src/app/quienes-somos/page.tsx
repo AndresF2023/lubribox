@@ -68,12 +68,12 @@ export default function QuienesSomosPage() {
               {parrafos.map(({ icon: Icon, texto }, i) => (
                 <div
                   key={i}
-                  className="bg-neutral-900 border border-neutral-700 hover:border-red-600/50 p-7 flex gap-6 transition-colors group"
+                  className="bg-neutral-900 border border-neutral-700 hover:border-red-600/50 p-6 sm:p-7 flex flex-col sm:flex-row gap-4 sm:gap-6 transition-colors group"
                 >
                   <div className="shrink-0 w-12 h-12 bg-red-600 flex items-center justify-center group-hover:bg-red-700 transition-colors">
                     <Icon size={22} className="text-white" />
                   </div>
-                  <p className="text-neutral-300 text-lg leading-relaxed">{texto}</p>
+                  <p className="text-neutral-300 text-base sm:text-lg leading-relaxed">{texto}</p>
                 </div>
               ))}
             </div>

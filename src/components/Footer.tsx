@@ -57,7 +57,7 @@ export default function Footer() {
             <div className="w-1 h-5 bg-red-600" />
             <h3 className="font-black text-white uppercase tracking-[0.15em] text-xs">Cómo llegar</h3>
           </div>
-          <div className="w-full h-64 border border-neutral-700 overflow-hidden">
+          <div className="w-full h-48 md:h-64 border border-neutral-700 overflow-hidden">
             <iframe
               src="https://www.google.com/maps?q=Emilio+Petorutti+2576,+C%C3%B3rdoba,+Argentina&output=embed"
               width="100%"

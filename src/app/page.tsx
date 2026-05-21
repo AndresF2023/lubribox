@@ -84,8 +84,8 @@ export default function Home() {
               <span className="inline-block bg-red-600 text-white text-xs font-black px-4 py-1.5 uppercase tracking-[0.2em] mb-5">
                 Car Service Profesional
               </span>
-              <h1 className="text-5xl md:text-7xl font-black leading-none mb-3 uppercase tracking-tight">
-                <span className="whitespace-nowrap">Si cuidás tu auto,</span><br />
+              <h1 className="text-4xl sm:text-5xl md:text-7xl font-black leading-none mb-3 uppercase tracking-tight">
+                Si cuidás tu auto,<br />
                 <span className="text-red-500">tu auto te cuida a vos</span>
               </h1>
               <div className="w-16 h-1 bg-red-600 mb-6" />
@@ -196,7 +196,7 @@ export default function Home() {
         <section className="py-20 bg-neutral-900 relative overflow-hidden">
           {/* Subtle diagonal accent */}
           <div className="absolute inset-0 pointer-events-none opacity-30">
-            <div className="slash-red" style={{ right: "15%" } as React.CSSProperties} />
+            <div className="slash-red" style={{ right: "15%" }} />
           </div>
           <div className="relative max-w-6xl mx-auto px-4 z-10">
             <div className="text-center mb-12">
