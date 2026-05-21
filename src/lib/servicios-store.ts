@@ -1,4 +1,4 @@
-import { list, put } from "@vercel/blob";
+import { get, put } from "@vercel/blob";
 import { servicios as serviciosDefault, categoriasDefault, Servicio, Categoria } from "@/data/servicios";
 
 const BLOB_PATH = "servicios.json";
@@ -13,14 +13,13 @@ async function getStore(): Promise<Store> {
     return { servicios: serviciosDefault, categorias: categoriasDefault };
   }
   try {
-    const { blobs } = await list({ prefix: BLOB_PATH, limit: 1 });
-    if (!blobs[0]) return { servicios: serviciosDefault, categorias: categoriasDefault };
-    const res = await fetch(blobs[0].downloadUrl ?? blobs[0].url, {
-      cache: "no-store",
-      headers: { Authorization: `Bearer ${process.env.BLOB_READ_WRITE_TOKEN}` },
+    const result = await get(BLOB_PATH, {
+      access: "private",
+      useCache: false,
+      token: process.env.BLOB_READ_WRITE_TOKEN,
     });
-    if (!res.ok) return { servicios: serviciosDefault, categorias: categoriasDefault };
-    const data = await res.json();
+    if (!result || !result.stream) return { servicios: serviciosDefault, categorias: categoriasDefault };
+    const data = await new Response(result.stream).json();
     // Compatibilidad con formato antiguo (array plano de servicios)
     if (Array.isArray(data)) {
       return { servicios: data, categorias: categoriasDefault };
