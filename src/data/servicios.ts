@@ -1,3 +1,16 @@
+export interface Categoria {
+  id: string;
+  nombre: string;
+}
+
+export const categoriasDefault: Categoria[] = [
+  { id: "paquetes", nombre: "Paquetes" },
+  { id: "mantenimiento", nombre: "Mantenimiento" },
+  { id: "frenos", nombre: "Frenos" },
+  { id: "suspension", nombre: "Suspensión" },
+  { id: "otros", nombre: "Otros" },
+];
+
 export interface Servicio {
   id: string;
   nombre: string;
@@ -8,7 +21,7 @@ export interface Servicio {
   precioBaseCamioneta?: number;
   precioPorLitroCamioneta?: number;
   incluye: string[];
-  categoria: "mantenimiento" | "frenos" | "suspension" | "otros" | "paquetes";
+  categoria: string;
 }
 
 export type TipoVehiculo = "auto" | "camioneta";

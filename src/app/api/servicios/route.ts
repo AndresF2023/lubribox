@@ -1,8 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { getSession } from "@/lib/session";
-import { saveServiciosStore } from "@/lib/servicios-store";
-import { Servicio } from "@/data/servicios";
+import { saveFullStore } from "@/lib/servicios-store";
+import { Servicio, Categoria } from "@/data/servicios";
+
+interface Body {
+  servicios: Servicio[];
+  categorias: Categoria[];
+}
 
 export async function PUT(req: NextRequest) {
   try {
@@ -13,8 +18,8 @@ export async function PUT(req: NextRequest) {
     if (!process.env.BLOB_READ_WRITE_TOKEN) {
       return NextResponse.json({ error: "Almacenamiento no configurado" }, { status: 503 });
     }
-    const data: Servicio[] = await req.json();
-    await saveServiciosStore(data);
+    const data: Body = await req.json();
+    await saveFullStore({ servicios: data.servicios, categorias: data.categorias });
     revalidatePath("/servicios");
     revalidatePath("/turnos");
     return NextResponse.json({ ok: true });

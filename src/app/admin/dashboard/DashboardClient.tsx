@@ -3,20 +3,13 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { CheckCircle, AlertCircle, LogOut, Save, Trash2, Plus, X } from "lucide-react";
-import { Servicio, formatearPrecio } from "@/data/servicios";
+import { CheckCircle, AlertCircle, LogOut, Save, Trash2, Plus, X, Tag } from "lucide-react";
+import { Servicio, Categoria, formatearPrecio } from "@/data/servicios";
 
 interface Props {
   serviciosIniciales: Servicio[];
+  categoriasIniciales: Categoria[];
 }
-
-const CATEGORIAS: Record<string, string> = {
-  paquetes: "Paquetes",
-  mantenimiento: "Mantenimiento",
-  frenos: "Frenos",
-  suspension: "Suspensión",
-  otros: "Otros",
-};
 
 const inputClass =
   "w-full bg-neutral-800 border border-neutral-600 text-white px-3 py-2 text-sm focus:outline-none focus:border-red-500 rounded-none";
@@ -45,15 +38,17 @@ const SERVICIO_VACIO: Omit<Servicio, "id"> = {
   incluye: [],
 };
 
-export default function DashboardClient({ serviciosIniciales }: Props) {
+export default function DashboardClient({ serviciosIniciales, categoriasIniciales }: Props) {
   const router = useRouter();
   const [servicios, setServicios] = useState<Servicio[]>(serviciosIniciales);
+  const [categorias, setCategorias] = useState<Categoria[]>(categoriasIniciales);
   const [guardando, setGuardando] = useState(false);
   const [mensaje, setMensaje] = useState<{ tipo: "ok" | "error"; texto: string } | null>(null);
   const [mostrarForm, setMostrarForm] = useState(false);
   const [nuevoServicio, setNuevoServicio] = useState<Omit<Servicio, "id">>(SERVICIO_VACIO);
   const [nuevoItem, setNuevoItem] = useState("");
   const [tienePrecioPorLitro, setTienePrecioPorLitro] = useState(false);
+  const [nuevaCategoriaNombre, setNuevaCategoriaNombre] = useState("");
 
   // ── Editar precios de servicio existente ─────────────────────────────
   function handleCampo(id: string, campo: keyof Servicio, valor: string) {
@@ -95,10 +90,35 @@ export default function DashboardClient({ serviciosIniciales }: Props) {
       precioPorLitro: tienePrecioPorLitro ? nuevoServicio.precioPorLitro : undefined,
     };
     setServicios((prev) => [...prev, s]);
-    setNuevoServicio(SERVICIO_VACIO);
+    setNuevoServicio({ ...SERVICIO_VACIO, categoria: categorias[0]?.id ?? "otros" });
     setNuevoItem("");
     setTienePrecioPorLitro(false);
     setMostrarForm(false);
+    setMensaje(null);
+  }
+
+  // ── Gestión de categorías ────────────────────────────────────────────
+  function agregarCategoria() {
+    const nombre = nuevaCategoriaNombre.trim();
+    if (!nombre) return;
+    const id = generarId(nombre);
+    if (categorias.some((c) => c.id === id)) {
+      setMensaje({ tipo: "error", texto: "Ya existe una categoría con ese nombre" });
+      return;
+    }
+    setCategorias((prev) => [...prev, { id, nombre }]);
+    setNuevaCategoriaNombre("");
+    setMensaje(null);
+  }
+
+  function eliminarCategoria(id: string) {
+    const enUso = servicios.some((s) => s.categoria === id);
+    if (enUso) {
+      setMensaje({ tipo: "error", texto: "No se puede eliminar: hay servicios usando esta categoría" });
+      return;
+    }
+    if (!confirm("¿Eliminar esta categoría?")) return;
+    setCategorias((prev) => prev.filter((c) => c.id !== id));
     setMensaje(null);
   }
 
@@ -110,7 +130,7 @@ export default function DashboardClient({ serviciosIniciales }: Props) {
       const res = await fetch("/api/servicios", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(servicios),
+        body: JSON.stringify({ servicios, categorias }),
       });
       if (!res.ok) {
         const data = await res.json();
@@ -131,11 +151,13 @@ export default function DashboardClient({ serviciosIniciales }: Props) {
     router.refresh();
   }
 
-  const porCategoria = Object.entries(CATEGORIAS).map(([cat, label]) => ({
-    cat,
-    label,
-    items: servicios.filter((s) => s.categoria === cat),
+  const porCategoria = categorias.map((cat) => ({
+    cat: cat.id,
+    label: cat.nombre,
+    items: servicios.filter((s) => s.categoria === cat.id),
   })).filter((g) => g.items.length > 0);
+
+  const defaultCategoria = categorias[0]?.id ?? "otros";
 
   return (
     <div className="min-h-screen bg-neutral-950 text-white">
@@ -182,6 +204,55 @@ export default function DashboardClient({ serviciosIniciales }: Props) {
             {mensaje.texto}
           </div>
         )}
+
+        {/* ── Gestión de categorías ── */}
+        <div className="mb-10">
+          <h2 className="font-black text-white uppercase tracking-[0.15em] text-xs mb-4 flex items-center gap-3">
+            <Tag size={13} className="text-red-500" />
+            <span>Categorías</span>
+            <span className="flex-1 border-t border-neutral-800" />
+          </h2>
+          <div className="bg-neutral-900 border border-neutral-700 p-5">
+            <div className="flex flex-wrap gap-2 mb-4">
+              {categorias.map((cat) => (
+                <div
+                  key={cat.id}
+                  className="flex items-center gap-2 bg-neutral-800 border border-neutral-700 px-3 py-2 text-sm"
+                >
+                  <span className="font-black text-white uppercase tracking-wide text-xs">{cat.nombre}</span>
+                  <button
+                    onClick={() => eliminarCategoria(cat.id)}
+                    className="text-neutral-600 hover:text-red-500 transition-colors ml-1"
+                    title="Eliminar categoría"
+                  >
+                    <X size={13} />
+                  </button>
+                </div>
+              ))}
+              {categorias.length === 0 && (
+                <p className="text-neutral-600 text-xs italic">Sin categorías. Agregá al menos una.</p>
+              )}
+            </div>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={nuevaCategoriaNombre}
+                onChange={(e) => setNuevaCategoriaNombre(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), agregarCategoria())}
+                className={`${inputClass} flex-1`}
+                placeholder="Nueva categoría (ej: Electricidad)"
+              />
+              <button
+                type="button"
+                onClick={agregarCategoria}
+                className="flex items-center gap-2 bg-neutral-700 hover:bg-neutral-600 text-white px-4 py-2 text-xs font-black uppercase tracking-widest transition-colors whitespace-nowrap"
+              >
+                <Plus size={13} />
+                Agregar
+              </button>
+            </div>
+          </div>
+        </div>
 
         {/* Servicios por categoría */}
         <div className="space-y-8">
@@ -285,7 +356,10 @@ export default function DashboardClient({ serviciosIniciales }: Props) {
         <div className="mt-10">
           {!mostrarForm ? (
             <button
-              onClick={() => setMostrarForm(true)}
+              onClick={() => {
+                setNuevoServicio({ ...SERVICIO_VACIO, categoria: defaultCategoria });
+                setMostrarForm(true);
+              }}
               className="flex items-center gap-2 border border-dashed border-neutral-600 hover:border-red-600 text-neutral-400 hover:text-white font-black uppercase tracking-widest text-xs px-6 py-4 w-full justify-center transition-colors"
             >
               <Plus size={14} />
@@ -328,11 +402,11 @@ export default function DashboardClient({ serviciosIniciales }: Props) {
                   <label className={labelClass}>Categoría</label>
                   <select
                     value={nuevoServicio.categoria}
-                    onChange={(e) => setNuevoServicio((p) => ({ ...p, categoria: e.target.value as Servicio["categoria"] }))}
+                    onChange={(e) => setNuevoServicio((p) => ({ ...p, categoria: e.target.value }))}
                     className={inputClass}
                   >
-                    {Object.entries(CATEGORIAS).map(([val, lbl]) => (
-                      <option key={val} value={val}>{lbl}</option>
+                    {categorias.map((cat) => (
+                      <option key={cat.id} value={cat.id}>{cat.nombre}</option>
                     ))}
                   </select>
                 </div>

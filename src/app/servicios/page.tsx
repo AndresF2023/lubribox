@@ -1,10 +1,10 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ServiciosClient from "./ServiciosClient";
-import { getServiciosStore } from "@/lib/servicios-store";
+import { getFullStore } from "@/lib/servicios-store";
 
 export default async function ServiciosPage() {
-  const servicios = await getServiciosStore();
+  const { servicios, categorias } = await getFullStore();
   return (
     <>
       <Header />
@@ -38,7 +38,7 @@ export default async function ServiciosPage() {
             </p>
           </div>
         </div>
-        <ServiciosClient servicios={servicios} />
+        <ServiciosClient servicios={servicios} categorias={categorias} />
       </main>
       <Footer />
     </>
