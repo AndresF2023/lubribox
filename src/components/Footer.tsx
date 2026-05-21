@@ -73,7 +73,7 @@ export default function Footer() {
       </div>
 
       <div className="border-t border-neutral-800 text-center text-neutral-600 text-xs py-4">
-        © 2022 LubriBox Car Service. Todos los derechos reservados.
+        © 2026 LubriBox Car Service. Todos los derechos reservados.
       </div>
     </footer>
   );

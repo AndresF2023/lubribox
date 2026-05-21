@@ -6,7 +6,7 @@ import { Suspense } from "react";
 import { autos } from "@/data/autos";
 import { Servicio } from "@/data/servicios";
 import { getProximosDias, getHorariosDisponibles, formatearFecha } from "@/data/disponibilidad";
-import { CheckCircle, ChevronDown, Calendar, Clock, Car, Truck, MessageCircle, CalendarPlus } from "lucide-react";
+import { CheckCircle, ChevronDown, Calendar, Clock, Car, Truck, MessageCircle, AlertCircle } from "lucide-react";
 
 type Paso = 1 | 2 | 3 | 4;
 
@@ -29,6 +29,7 @@ function fmtCalendar(date: Date): string {
 function buildCalendarUrl(
   fecha: Date,
   hora: string,
+  duracionMin: number,
   servicio: string,
   vehiculo: string,
   clienteNombre: string,
@@ -38,7 +39,7 @@ function buildCalendarUrl(
   const start = new Date(fecha);
   start.setHours(h, m, 0, 0);
   const end = new Date(start);
-  end.setHours(h + 1, m, 0, 0);
+  end.setMinutes(end.getMinutes() + duracionMin);
 
   const params = new URLSearchParams({
     action: "TEMPLATE",
@@ -93,6 +94,13 @@ const inputClass =
 const selectClass =
   "w-full appearance-none bg-neutral-800 border border-neutral-600 text-white rounded-none px-4 py-3 pr-10 text-sm focus:outline-none focus:border-red-500 disabled:opacity-40 disabled:cursor-not-allowed";
 
+const btnContinuarClass =
+  "bg-red-600 hover:bg-red-700 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-red-600 text-white font-black px-8 py-3 uppercase tracking-widest text-xs transition-colors";
+
+function telefonoValido(tel: string): boolean {
+  return tel.trim().replace(/\D/g, "").length >= 8;
+}
+
 function TurnosForm({ servicios }: { servicios: Servicio[] }) {
   const params = useSearchParams();
 
@@ -110,13 +118,16 @@ function TurnosForm({ servicios }: { servicios: Servicio[] }) {
   const [comentario, setComentario] = useState("");
   const [enviado, setEnviado] = useState(false);
   const [whatsappUrl, setWhatsappUrl] = useState("");
+  const [whatsappBloqueado, setWhatsappBloqueado] = useState(false);
 
-  const dias = getProximosDias(7);
-  const horariosDisponibles = diaIndex !== null ? getHorariosDisponibles(dias[diaIndex]) : [];
-
+  const dias = getProximosDias(14);
   const marcaData = autos.find((a) => a.marca === marca);
   const modeloData = marcaData?.modelos.find((m) => m.nombre === modeloNombre);
   const servicioData = servicios.find((s) => s.id === servicioId);
+  const horariosDisponibles =
+    diaIndex !== null
+      ? getHorariosDisponibles(dias[diaIndex], servicioData?.duracionMin ?? 60)
+      : [];
 
   useEffect(() => {
     if (marca && modeloNombre && año && servicioId) {
@@ -137,7 +148,7 @@ function TurnosForm({ servicios }: { servicios: Servicio[] }) {
 
   function paso1Completo() { return marca && modeloNombre && año && servicioId; }
   function paso2Completo() { return diaIndex !== null && horario; }
-  function paso3Completo() { return nombre.trim() && telefono.trim() && email.trim(); }
+  function paso3Completo() { return nombre.trim() && telefonoValido(telefono) && email.trim(); }
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -152,6 +163,7 @@ function TurnosForm({ servicios }: { servicios: Servicio[] }) {
     const calUrl = buildCalendarUrl(
       dias[diaIndex!],
       horario,
+      servicioData?.duracionMin ?? 60,
       servicioData?.nombre ?? "",
       vehiculo,
       nombre,
@@ -171,7 +183,8 @@ function TurnosForm({ servicios }: { servicios: Servicio[] }) {
     );
     setWhatsappUrl(waUrl);
     setEnviado(true);
-    window.open(waUrl, "_blank");
+    const popup = window.open(waUrl, "_blank");
+    if (!popup) setWhatsappBloqueado(true);
   }
 
   /* ─── CONFIRMACIÓN ─── */
@@ -185,6 +198,16 @@ function TurnosForm({ servicios }: { servicios: Servicio[] }) {
         <p className="text-neutral-400 mb-6">
           Tu solicitud fue enviada por WhatsApp al lubricentro. Te van a confirmar el turno a la brevedad.
         </p>
+
+        {/* Aviso si WhatsApp fue bloqueado */}
+        {whatsappBloqueado && (
+          <div className="flex items-start gap-3 text-sm text-yellow-400 bg-yellow-900/20 border border-yellow-800 p-4 mb-6 text-left">
+            <AlertCircle size={16} className="shrink-0 mt-0.5" />
+            <span>
+              El navegador bloqueó la apertura de WhatsApp. Usá el botón de abajo para enviar tu solicitud.
+            </span>
+          </div>
+        )}
 
         {/* Resumen */}
         <div className="bg-neutral-800 border border-neutral-700 p-5 mb-6 text-left space-y-3 text-sm">
@@ -211,12 +234,12 @@ function TurnosForm({ servicios }: { servicios: Servicio[] }) {
             className="flex items-center justify-center gap-2 w-full bg-green-600 hover:bg-green-700 text-white font-black px-6 py-4 uppercase tracking-widest text-xs transition-colors"
           >
             <MessageCircle size={16} />
-            Reenviar por WhatsApp
+            {whatsappBloqueado ? "Enviar por WhatsApp" : "Reenviar por WhatsApp"}
           </a>
         </div>
 
         <p className="text-xs text-neutral-600 mt-6">
-          El mensaje incluye un link para que el lubricentro pueda agregar el turno a Google Calendar.
+          Si WhatsApp no se abrió automáticamente, usá el botón de arriba para enviar tu solicitud.
         </p>
         <p className="text-xs text-neutral-600 mt-2">
           Consultas: +54 351 205-2196
@@ -263,11 +286,11 @@ function TurnosForm({ servicios }: { servicios: Servicio[] }) {
               <h2 className="text-lg font-black text-white uppercase tracking-wide">Tu vehículo y servicio</h2>
             </div>
 
-            {/* Toggle tipo de vehículo */}
+            {/* Toggle tipo de vehículo — no resetea la selección de marca/modelo */}
             <div className="flex mb-5 border border-neutral-700 w-fit">
               <button
                 type="button"
-                onClick={() => { setTipoVehiculo("auto"); handleMarca(""); }}
+                onClick={() => setTipoVehiculo("auto")}
                 className={`flex items-center gap-2 px-5 py-2.5 text-xs font-black uppercase tracking-widest transition-colors ${
                   tipoVehiculo === "auto" ? "bg-red-600 text-white" : "bg-neutral-800 text-neutral-400 hover:text-white"
                 }`}
@@ -276,7 +299,7 @@ function TurnosForm({ servicios }: { servicios: Servicio[] }) {
               </button>
               <button
                 type="button"
-                onClick={() => { setTipoVehiculo("camioneta"); handleMarca(""); }}
+                onClick={() => setTipoVehiculo("camioneta")}
                 className={`flex items-center gap-2 px-5 py-2.5 text-xs font-black uppercase tracking-widest transition-colors border-l border-neutral-700 ${
                   tipoVehiculo === "camioneta" ? "bg-red-600 text-white" : "bg-neutral-800 text-neutral-400 hover:text-white"
                 }`}
@@ -334,7 +357,7 @@ function TurnosForm({ servicios }: { servicios: Servicio[] }) {
                 type="button"
                 onClick={() => setPaso(2)}
                 disabled={!paso1Completo()}
-                className="bg-red-600 hover:bg-red-700 disabled:bg-neutral-800 disabled:text-neutral-600 disabled:border disabled:border-neutral-700 text-white font-black px-8 py-3 uppercase tracking-widest text-xs transition-colors"
+                className={btnContinuarClass}
               >
                 Continuar →
               </button>
@@ -357,17 +380,28 @@ function TurnosForm({ servicios }: { servicios: Servicio[] }) {
               <span className="text-red-400 text-xs uppercase font-black tracking-widest">{tipoVehiculo}</span>
               <span className="text-neutral-600">|</span>
               <span className="text-neutral-400">{servicioData?.nombre}</span>
+              {servicioData && (
+                <>
+                  <span className="text-neutral-600">|</span>
+                  <span className="text-neutral-500 text-xs flex items-center gap-1">
+                    <Clock size={11} />
+                    {servicioData.duracionMin < 60
+                      ? `${servicioData.duracionMin} min`
+                      : `${Math.floor(servicioData.duracionMin / 60)}h${servicioData.duracionMin % 60 > 0 ? ` ${servicioData.duracionMin % 60}min` : ""}`}
+                  </span>
+                </>
+              )}
               <button type="button" onClick={() => setPaso(1)} className="text-red-500 hover:text-red-400 ml-auto text-xs font-black uppercase tracking-widest">
                 Modificar
               </button>
             </div>
 
-            {/* Días */}
+            {/* Días — 14 días, grid que se adapta */}
             <div className="mb-6">
               <label className={`${labelClass} flex items-center gap-2`}>
-                <Calendar size={13} /> Día
+                <Calendar size={13} /> Día (próximos 14 días hábiles)
               </label>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2">
                 {dias.map((d, i) => (
                   <button
                     key={i}
@@ -430,7 +464,7 @@ function TurnosForm({ servicios }: { servicios: Servicio[] }) {
                 type="button"
                 onClick={() => setPaso(3)}
                 disabled={!paso2Completo()}
-                className="bg-red-600 hover:bg-red-700 disabled:bg-neutral-800 disabled:text-neutral-600 disabled:border disabled:border-neutral-700 text-white font-black px-8 py-3 uppercase tracking-widest text-xs transition-colors"
+                className={btnContinuarClass}
               >
                 Continuar →
               </button>
@@ -468,7 +502,17 @@ function TurnosForm({ servicios }: { servicios: Servicio[] }) {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className={labelClass}>Teléfono / WhatsApp *</label>
-                  <input type="tel" required value={telefono} onChange={(e) => setTelefono(e.target.value)} placeholder="351 205-2196" className={inputClass} />
+                  <input
+                    type="tel"
+                    required
+                    value={telefono}
+                    onChange={(e) => setTelefono(e.target.value)}
+                    placeholder="Ej: 3511234567"
+                    className={inputClass}
+                  />
+                  {telefono && !telefonoValido(telefono) && (
+                    <p className="text-xs text-red-400 mt-1">Ingresá al menos 8 dígitos</p>
+                  )}
                 </div>
                 <div>
                   <label className={labelClass}>Email *</label>
@@ -498,7 +542,7 @@ function TurnosForm({ servicios }: { servicios: Servicio[] }) {
               <button
                 type="submit"
                 disabled={!paso3Completo()}
-                className="bg-red-600 hover:bg-red-700 disabled:bg-neutral-800 disabled:text-neutral-600 disabled:border disabled:border-neutral-700 text-white font-black px-8 py-3 uppercase tracking-widest text-xs transition-colors"
+                className={btnContinuarClass}
               >
                 Confirmar turno
               </button>
@@ -512,7 +556,12 @@ function TurnosForm({ servicios }: { servicios: Servicio[] }) {
 
 export default function TurnosClient({ servicios }: { servicios: Servicio[] }) {
   return (
-    <Suspense fallback={<div className="py-20 text-center text-neutral-500 uppercase tracking-widest text-xs">Cargando...</div>}>
+    <Suspense fallback={
+      <div className="py-20 text-center flex flex-col items-center gap-3">
+        <div className="w-8 h-8 border-2 border-neutral-700 border-t-red-600 rounded-full animate-spin" />
+        <span className="text-neutral-500 uppercase tracking-widest text-xs">Cargando...</span>
+      </div>
+    }>
       <TurnosForm servicios={servicios} />
     </Suspense>
   );

@@ -186,7 +186,7 @@ export default async function Home() {
                   key={nombre}
                   className="bg-neutral-800 border-l-4 border-l-red-600 border border-neutral-700 hover:border-neutral-600 p-5 flex items-center justify-between transition-colors group"
                 >
-                  <span className="font-bold text-neutral-200 text-sm group-hover:text-white transition-colors">{nombre}</span>
+                  <span className="font-bold text-neutral-200 text-sm group-hover:text-white transition-colors truncate">{nombre}</span>
                   <div className="text-right shrink-0 ml-4">
                     <span className="text-xs text-neutral-500 block uppercase tracking-widest">desde</span>
                     <span className="text-red-500 font-black text-xl">{formatPrecio(desde)}</span>
