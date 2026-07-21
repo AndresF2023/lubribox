@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import "./globals.css";
 import WhatsAppButton from "@/components/WhatsAppButton";
+import PageTracker from "@/components/PageTracker";
 import { Analytics } from "@vercel/analytics/next";
 
 const geist = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
@@ -17,6 +18,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="min-h-full flex flex-col bg-neutral-950 text-white">
         {children}
         <WhatsAppButton />
+        <PageTracker />
         <Analytics />
       </body>
     </html>

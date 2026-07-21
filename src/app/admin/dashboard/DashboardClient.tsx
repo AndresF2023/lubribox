@@ -3,8 +3,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { CheckCircle, AlertCircle, LogOut, Save, Trash2, Plus, X, Tag } from "lucide-react";
+import { CheckCircle, AlertCircle, LogOut, Save, Trash2, Plus, X, Tag, BarChart2, Settings } from "lucide-react";
 import { Servicio, Categoria, formatearPrecio } from "@/data/servicios";
+import AnalyticsPanel from "./AnalyticsPanel";
 
 interface Props {
   serviciosIniciales: Servicio[];
@@ -40,6 +41,7 @@ const SERVICIO_VACIO: Omit<Servicio, "id"> = {
 
 export default function DashboardClient({ serviciosIniciales, categoriasIniciales }: Props) {
   const router = useRouter();
+  const [tab, setTab] = useState<"servicios" | "estadisticas">("servicios");
   const [servicios, setServicios] = useState<Servicio[]>(serviciosIniciales);
   const [categorias, setCategorias] = useState<Categoria[]>(categoriasIniciales);
   const [guardando, setGuardando] = useState(false);
@@ -171,6 +173,27 @@ export default function DashboardClient({ serviciosIniciales, categoriasIniciale
               Panel Administrativo
             </div>
           </div>
+          {/* Tabs */}
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => setTab("servicios")}
+              className={`flex items-center gap-1.5 px-3 py-2 text-xs font-black uppercase tracking-widest transition-colors ${
+                tab === "servicios" ? "text-white border-b-2 border-red-600" : "text-neutral-500 hover:text-white"
+              }`}
+            >
+              <Settings size={12} />
+              <span className="hidden sm:inline">Servicios</span>
+            </button>
+            <button
+              onClick={() => setTab("estadisticas")}
+              className={`flex items-center gap-1.5 px-3 py-2 text-xs font-black uppercase tracking-widest transition-colors ${
+                tab === "estadisticas" ? "text-white border-b-2 border-red-600" : "text-neutral-500 hover:text-white"
+              }`}
+            >
+              <BarChart2 size={12} />
+              <span className="hidden sm:inline">Estadísticas</span>
+            </button>
+          </div>
           <button
             onClick={cerrarSesion}
             className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-neutral-400 hover:text-white transition-colors px-3 py-2 hover:bg-neutral-800"
@@ -182,6 +205,24 @@ export default function DashboardClient({ serviciosIniciales, categoriasIniciale
       </header>
 
       <main className="max-w-4xl mx-auto px-4 py-10">
+
+        {/* ── Tab Estadísticas ── */}
+        {tab === "estadisticas" && (
+          <div>
+            <div className="mb-8">
+              <span className="text-red-500 text-xs font-black uppercase tracking-[0.2em] block mb-2">Administración</span>
+              <h1 className="text-3xl font-black uppercase tracking-tight">
+                <span className="text-red-500">Estadísticas</span> del sitio
+              </h1>
+              <div className="w-12 h-1 bg-red-600 mt-3" />
+            </div>
+            <AnalyticsPanel />
+          </div>
+        )}
+
+        {/* ── Tab Servicios ── */}
+        {tab === "servicios" && <>
+
         {/* Título */}
         <div className="mb-8">
           <span className="text-red-500 text-xs font-black uppercase tracking-[0.2em] block mb-2">Administración</span>
@@ -563,6 +604,8 @@ export default function DashboardClient({ serviciosIniciales, categoriasIniciale
             {guardando ? "Guardando..." : "Guardar todos los cambios"}
           </button>
         </div>
+
+        </>}
       </main>
     </div>
   );

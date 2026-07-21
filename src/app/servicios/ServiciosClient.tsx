@@ -5,7 +5,7 @@ import Link from "next/link";
 import { autos } from "@/data/autos";
 import { Servicio, Categoria, TipoVehiculo, calcularPrecio, formatearPrecio, getPrecioPorLitro, getPrecioBase } from "@/data/servicios";
 import { Clock, CheckCircle, ChevronDown, Zap, Truck, Car } from "lucide-react";
-import { track } from "@vercel/analytics";
+import { track } from "@/lib/track";
 
 const selectClass =
   "w-full appearance-none bg-neutral-800 border border-neutral-600 text-white rounded-none px-4 py-3 pr-10 text-sm focus:outline-none focus:border-red-500 disabled:opacity-40 disabled:cursor-not-allowed";

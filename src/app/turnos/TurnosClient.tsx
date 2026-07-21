@@ -7,7 +7,7 @@ import { autos } from "@/data/autos";
 import { Servicio } from "@/data/servicios";
 import { getProximosDias, getHorariosDisponibles, formatearFecha } from "@/data/disponibilidad";
 import { CheckCircle, ChevronDown, Calendar, Clock, Car, Truck, MessageCircle, AlertCircle } from "lucide-react";
-import { track } from "@vercel/analytics";
+import { track } from "@/lib/track";
 
 type Paso = 1 | 2 | 3 | 4;
 
