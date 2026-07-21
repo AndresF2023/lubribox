@@ -5,6 +5,7 @@ import Link from "next/link";
 import { autos } from "@/data/autos";
 import { Servicio, Categoria, TipoVehiculo, calcularPrecio, formatearPrecio, getPrecioPorLitro, getPrecioBase } from "@/data/servicios";
 import { Clock, CheckCircle, ChevronDown, Zap, Truck, Car } from "lucide-react";
+import { track } from "@vercel/analytics";
 
 const selectClass =
   "w-full appearance-none bg-neutral-800 border border-neutral-600 text-white rounded-none px-4 py-3 pr-10 text-sm focus:outline-none focus:border-red-500 disabled:opacity-40 disabled:cursor-not-allowed";
@@ -162,7 +163,7 @@ export default function ServiciosClient({ servicios, categorias }: { servicios: 
       {/* Filtro por categoría */}
       <div className="flex flex-wrap gap-2 mb-6">
         <button
-          onClick={() => setCategoria("todos")}
+          onClick={() => { track("servicios_filtro_categoria", { categoria: "todos" }); setCategoria("todos"); }}
           className={`px-5 py-2.5 text-xs font-black uppercase tracking-widest transition-colors ${
             categoria === "todos"
               ? "bg-red-600 text-white"
@@ -174,7 +175,7 @@ export default function ServiciosClient({ servicios, categorias }: { servicios: 
         {categorias.map(({ id, nombre }) => (
           <button
             key={id}
-            onClick={() => setCategoria(id)}
+            onClick={() => { track("servicios_filtro_categoria", { categoria: nombre }); setCategoria(id); }}
             className={`px-5 py-2.5 text-xs font-black uppercase tracking-widest transition-colors ${
               categoria === id
                 ? "bg-red-600 text-white"
@@ -199,7 +200,10 @@ export default function ServiciosClient({ servicios, categorias }: { servicios: 
               className="bg-neutral-900 border border-neutral-700 hover:border-neutral-600 transition-colors overflow-hidden"
             >
               <button
-                onClick={() => setExpandido(abierto ? null : s.id)}
+                onClick={() => {
+                  if (!abierto) track("servicio_expandido", { servicio: s.nombre });
+                  setExpandido(abierto ? null : s.id);
+                }}
                 className="w-full text-left px-4 sm:px-6 py-4 sm:py-5 flex items-center justify-between gap-3"
               >
                 <div className="flex-1 min-w-0">
@@ -252,6 +256,7 @@ export default function ServiciosClient({ servicios, categorias }: { servicios: 
                   <div className="mt-5">
                     <Link
                       href={`/turnos?servicio=${s.id}${marca ? `&marca=${marca}` : ""}${modeloNombre ? `&modelo=${modeloNombre}` : ""}${año ? `&año=${año}` : ""}`}
+                      onClick={() => track("servicio_sacar_turno_click", { servicio: s.nombre })}
                       className="inline-block bg-red-600 hover:bg-red-700 text-white font-black px-6 py-3 uppercase tracking-widest text-xs transition-colors"
                     >
                       Sacar turno para este servicio

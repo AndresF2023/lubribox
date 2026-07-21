@@ -1,3 +1,7 @@
+"use client";
+
+import { track } from "@vercel/analytics";
+
 export default function WhatsAppButton() {
   return (
     <a
@@ -5,6 +9,7 @@ export default function WhatsAppButton() {
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Contactar por WhatsApp"
+      onClick={() => track("whatsapp_flotante_click")}
       className="fixed bottom-6 right-4 sm:right-6 z-50 flex items-center justify-center w-14 h-14 rounded-full bg-[#25D366] shadow-lg hover:bg-[#1ebe5d] transition-colors"
       style={{ bottom: "max(1.5rem, env(safe-area-inset-bottom, 1.5rem))" }}
     >

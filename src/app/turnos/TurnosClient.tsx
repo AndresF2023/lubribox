@@ -7,6 +7,7 @@ import { autos } from "@/data/autos";
 import { Servicio } from "@/data/servicios";
 import { getProximosDias, getHorariosDisponibles, formatearFecha } from "@/data/disponibilidad";
 import { CheckCircle, ChevronDown, Calendar, Clock, Car, Truck, MessageCircle, AlertCircle } from "lucide-react";
+import { track } from "@vercel/analytics";
 
 type Paso = 1 | 2 | 3 | 4;
 
@@ -183,6 +184,12 @@ function TurnosForm({ servicios }: { servicios: Servicio[] }) {
     );
     setWhatsappUrl(waUrl);
     setEnviado(true);
+    track("turno_confirmado", {
+      servicio: servicioData?.nombre ?? servicioId,
+      marca,
+      tipo_vehiculo: tipoVehiculo,
+      horario,
+    });
     const popup = window.open(waUrl, "_blank");
     if (!popup) setWhatsappBloqueado(true);
   }
@@ -231,6 +238,7 @@ function TurnosForm({ servicios }: { servicios: Servicio[] }) {
             href={whatsappUrl}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() => track("turno_whatsapp_reenvio")}
             className="flex items-center justify-center gap-2 w-full bg-green-600 hover:bg-green-700 text-white font-black px-6 py-4 uppercase tracking-widest text-xs transition-colors"
           >
             <MessageCircle size={16} />
@@ -355,7 +363,10 @@ function TurnosForm({ servicios }: { servicios: Servicio[] }) {
             <div className="mt-6 flex justify-end">
               <button
                 type="button"
-                onClick={() => setPaso(2)}
+                onClick={() => {
+                  track("turno_paso2_inicio", { servicio: servicioId, marca, modelo: modeloNombre, año });
+                  setPaso(2);
+                }}
                 disabled={!paso1Completo()}
                 className={btnContinuarClass}
               >
@@ -462,7 +473,10 @@ function TurnosForm({ servicios }: { servicios: Servicio[] }) {
               </button>
               <button
                 type="button"
-                onClick={() => setPaso(3)}
+                onClick={() => {
+                  track("turno_paso3_inicio", { servicio: servicioId, horario });
+                  setPaso(3);
+                }}
                 disabled={!paso2Completo()}
                 className={btnContinuarClass}
               >
